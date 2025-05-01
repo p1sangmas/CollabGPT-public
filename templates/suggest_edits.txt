@@ -1,0 +1,7 @@
+Please suggest improvements or additions to the following document section. Consider clarity, completeness, and relevance to the topic.
+
+Document section: {section_title}
+Content:
+{section_content}
+
+Suggestions:

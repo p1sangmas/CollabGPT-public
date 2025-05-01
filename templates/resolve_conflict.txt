@@ -1,0 +1,9 @@
+There appears to be a conflict in the document editing. Please help reconcile these different versions.
+
+Version 1:
+{version1}
+
+Version 2:
+{version2}
+
+Suggested resolution:

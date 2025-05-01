@@ -1,0 +1,327 @@
+"""
+Webhook handler for CollabGPT.
+
+This module handles incoming webhooks from Google Docs API,
+processes document change notifications, and triggers the appropriate actions.
+"""
+
+import json
+import hashlib
+import hmac
+import time
+from typing import Dict, Any, Optional, Callable
+from datetime import datetime
+
+from ..api.google_docs import GoogleDocsAPI
+from ..utils import logger
+
+
+class WebhookHandler:
+    """
+    Handler for processing webhooks from Google Docs API.
+    """
+    
+    def __init__(self, google_docs_api: GoogleDocsAPI, secret_key: str = None):
+        """
+        Initialize the webhook handler.
+        
+        Args:
+            google_docs_api: An authenticated GoogleDocsAPI instance
+            secret_key: Optional secret key for webhook verification
+        """
+        self.google_docs_api = google_docs_api
+        self.secret_key = secret_key
+        self.callbacks = {}
+        self.document_history = {}
+        self.logger = logger.get_logger("webhook_handler")
+        
+    def register_callback(self, event_type: str, callback: Callable) -> None:
+        """
+        Register a callback function for a specific event type.
+        
+        Args:
+            event_type: Type of event (e.g., 'change', 'comment', 'suggest')
+            callback: Function to call when event occurs
+        """
+        if event_type not in self.callbacks:
+            self.callbacks[event_type] = []
+        self.callbacks[event_type].append(callback)
+        self.logger.info(f"Registered callback for event type: {event_type}")
+    
+    def verify_signature(self, payload: bytes, signature: str) -> bool:
+        """
+        Verify the webhook signature if a secret key is set.
+        
+        Args:
+            payload: The raw webhook payload
+            signature: The signature from the webhook header
+            
+        Returns:
+            True if signature is valid, False otherwise
+        """
+        if not self.secret_key:
+            return True  # No verification if no secret key is set
+            
+        computed_signature = hmac.new(
+            self.secret_key.encode(),
+            payload,
+            hashlib.sha256
+        ).hexdigest()
+        
+        return hmac.compare_digest(computed_signature, signature)
+    
+    def process_webhook(self, headers: Dict[str, str], payload: bytes) -> bool:
+        """
+        Process an incoming webhook from Google Docs API.
+        
+        Args:
+            headers: The webhook request headers
+            payload: The raw webhook payload
+            
+        Returns:
+            True if the webhook was processed successfully, False otherwise
+        """
+        # Debug information
+        self.logger.info(f"Received webhook with headers: {headers}")
+        
+        # Check if this is a Google Drive push notification
+        if 'X-Goog-Channel-ID' in headers or 'X-Goog-Resource-ID' in headers:
+            self.logger.info("Identified as Google Drive push notification")
+            return self.process_google_push_notification(headers)
+            
+        # For standard webhooks with JSON payload
+        try:
+            payload_str = payload.decode('utf-8') if payload else ""
+            self.logger.info(f"Webhook payload: {payload_str[:200]}..." if len(payload_str) > 200 else payload_str)
+            
+            # Verify signature if needed
+            if 'X-Goog-Signature' in headers and not self.verify_signature(
+                    payload, headers['X-Goog-Signature']):
+                self.logger.error("Invalid webhook signature")
+                return False
+                
+            # Parse the payload
+            data = json.loads(payload_str) if payload_str else {}
+            
+            # Extract document ID from resource URI
+            # Format: https://www.googleapis.com/drive/v3/files/DOCUMENT_ID
+            resource_uri = data.get('resourceUri', '')
+            document_id = resource_uri.split('/')[-1] if resource_uri else None
+            
+            if not document_id:
+                self.logger.error("No document ID found in webhook payload")
+                return False
+                
+            # Process based on event type
+            event_type = data.get('eventType', '').lower()
+            
+            if event_type == 'change':
+                self.logger.info(f"Processing change event for document {document_id}")
+                self._process_document_change(document_id, data)
+            elif event_type == 'comment':
+                self.logger.info(f"Processing comment event for document {document_id}")
+                self._process_document_comment(document_id, data)
+            else:
+                self.logger.warning(f"Unhandled event type: {event_type}")
+                
+            return True
+            
+        except json.JSONDecodeError:
+            self.logger.error(f"Invalid JSON payload in webhook: {payload}")
+            return False
+        except Exception as e:
+            self.logger.error(f"Error processing webhook: {e}", exc_info=True)
+            return False
+    
+    def process_google_push_notification(self, headers: Dict[str, str]) -> bool:
+        """
+        Process a Google Drive push notification.
+        
+        Args:
+            headers: The webhook request headers containing Google-specific headers
+            
+        Returns:
+            True if the notification was processed successfully, False otherwise
+        """
+        try:
+            # Extract key headers
+            channel_id = headers.get('X-Goog-Channel-ID', '')
+            resource_id = headers.get('X-Goog-Resource-ID', '')
+            resource_state = headers.get('X-Goog-Resource-State', '')
+            resource_uri = headers.get('X-Goog-Resource-URI', '')
+            changed = headers.get('X-Goog-Changed', '')
+            
+            # Log the complete headers for debugging
+            self.logger.info(f"Complete Google notification headers: {headers}")
+            
+            # Log the individual extracted headers
+            self.logger.info(f"Google notification details - State: {resource_state}, Channel: {channel_id}, Resource: {resource_id}, URI: {resource_uri}")
+            if changed:
+                self.logger.info(f"Changed components: {changed}")
+            
+            # Check if this is a valid notification type and resource URI is available
+            if resource_uri:
+                # Extract document ID from the resource URI
+                # URI format: https://www.googleapis.com/drive/v3/files/document_id
+                doc_id = resource_uri.split('/')[-1].split('?')[0]  # Handle any query parameters
+                
+                self.logger.info(f"Document notification for doc_id={doc_id}")
+                
+                # For 'change' or 'update' state, process document changes
+                if resource_state in ['change', 'update']:
+                    self.logger.info(f"Processing document change from Google notification for doc: {doc_id}")
+                    self._process_document_change(doc_id, {'eventType': 'change', 'source': 'google_push', 'changed': changed})
+                    return True
+                # For 'sync' state, this is just acknowledging the notification setup
+                elif resource_state == 'sync':
+                    self.logger.info(f"Webhook synchronization notification received for channel {channel_id}")
+                    return True
+                else:
+                    self.logger.warning(f"Unhandled resource state: {resource_state}")
+                    return False
+            else:
+                # Case-insensitive header search for Resource URI
+                resource_uri_alt = None
+                for key, value in headers.items():
+                    if key.lower() == 'x-goog-resource-uri':
+                        resource_uri_alt = value
+                        break
+                
+                if resource_uri_alt:
+                    # Process with the alternate found URI
+                    doc_id = resource_uri_alt.split('/')[-1].split('?')[0]
+                    self.logger.info(f"Found alternate resource URI: {resource_uri_alt}, doc_id={doc_id}")
+                    
+                    if resource_state in ['change', 'update']:
+                        self.logger.info(f"Processing document change from Google notification for doc: {doc_id}")
+                        self._process_document_change(doc_id, {'eventType': 'change', 'source': 'google_push', 'changed': changed})
+                        return True
+                    elif resource_state == 'sync':
+                        self.logger.info(f"Webhook synchronization notification received for channel {channel_id}")
+                        return True
+                    else:
+                        self.logger.warning(f"Unhandled resource state: {resource_state}")
+                        return False
+                else:
+                    self.logger.warning("No resource URI in notification")
+                    return False
+                
+        except Exception as e:
+            self.logger.error(f"Error processing Google notification: {e}", exc_info=True)
+            return False
+    
+    def _process_document_change(self, document_id: str, data: Dict[str, Any]) -> None:
+        """
+        Process a document change event.
+        
+        Args:
+            document_id: The ID of the changed document
+            data: Additional data about the change
+        """
+        self.logger.info(f"Processing document change for {document_id}")
+        
+        try:
+            # Get the current content of the document
+            self.logger.debug(f"Fetching current content for document {document_id}")
+            current_content = self.google_docs_api.get_document_content(document_id)
+            
+            if not current_content:
+                self.logger.error(f"Failed to retrieve content for document {document_id}")
+                return
+                
+            self.logger.debug(f"Retrieved document content: {len(current_content)} characters")
+                
+            # Get previous content if available
+            previous_content = ""
+            if document_id in self.document_history:
+                previous_content = self.document_history.get(document_id, {}).get('content', '')
+                self.logger.debug(f"Previous content length: {len(previous_content)} characters")
+                
+            # Store current content in history
+            self.document_history[document_id] = {
+                'content': current_content,
+                'last_updated': datetime.now().isoformat()
+            }
+            
+            # Call registered callbacks
+            if 'change' in self.callbacks:
+                change_data = {
+                    'document_id': document_id,
+                    'current_content': current_content,
+                    'previous_content': previous_content,
+                    'timestamp': time.time(),
+                    'metadata': data
+                }
+                
+                self.logger.info(f"Calling {len(self.callbacks['change'])} registered change callbacks")
+                
+                for callback in self.callbacks['change']:
+                    try:
+                        self.logger.debug(f"Calling change callback: {callback.__name__ if hasattr(callback, '__name__') else 'anonymous'}")
+                        callback(change_data)
+                        self.logger.debug("Callback executed successfully")
+                    except Exception as e:
+                        self.logger.error(f"Error in change callback: {e}", exc_info=True)
+                        
+            else:
+                self.logger.warning("No callbacks registered for 'change' events")
+                
+        except Exception as e:
+            self.logger.error(f"Error processing document change: {e}", exc_info=True)
+    
+    def _process_document_comment(self, document_id: str, data: Dict[str, Any]) -> None:
+        """
+        Process a document comment event.
+        
+        Args:
+            document_id: The ID of the document with new comments
+            data: Additional data about the comments
+        """
+        self.logger.info(f"Processing document comment for {document_id}")
+        
+        try:
+            # Get comments from the document
+            self.logger.debug(f"Fetching comments for document {document_id}")
+            comments = self.google_docs_api.get_document_comments(document_id)
+            
+            if not comments:
+                self.logger.warning(f"No comments found for document {document_id}")
+                return
+                
+            self.logger.debug(f"Retrieved {len(comments)} comments")
+                
+            # Call registered callbacks
+            if 'comment' in self.callbacks:
+                comment_data = {
+                    'document_id': document_id,
+                    'comments': comments,
+                    'timestamp': time.time(),
+                    'metadata': data
+                }
+                
+                self.logger.info(f"Calling {len(self.callbacks['comment'])} registered comment callbacks")
+                
+                for callback in self.callbacks['comment']:
+                    try:
+                        self.logger.debug(f"Calling comment callback: {callback.__name__ if hasattr(callback, '__name__') else 'anonymous'}")
+                        callback(comment_data)
+                        self.logger.debug("Callback executed successfully")
+                    except Exception as e:
+                        self.logger.error(f"Error in comment callback: {e}", exc_info=True)
+                        
+            else:
+                self.logger.warning("No callbacks registered for 'comment' events")
+                
+        except Exception as e:
+            self.logger.error(f"Error processing document comment: {e}", exc_info=True)
+    
+    def simulate_change_event(self, document_id: str) -> None:
+        """
+        Simulate a document change event for testing or manual triggering.
+        
+        Args:
+            document_id: The ID of the document to simulate a change for
+        """
+        self.logger.info(f"Simulating change event for document {document_id}")
+        self._process_document_change(document_id, {'eventType': 'change', 'simulated': True})
+        self.logger.info(f"Simulation completed for document {document_id}")

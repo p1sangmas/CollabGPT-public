@@ -1,0 +1,9 @@
+Please summarize the changes made to this document.
+
+Previous version:
+{previous_content}
+
+Current version:
+{current_content}
+
+Summary of changes:

@@ -1,0 +1,6 @@
+Please provide a concise summary of the following document content. Focus on the main topics, key points, and any action items.
+
+Document content:
+{document_content}
+
+Summary:
