@@ -1609,3 +1609,37 @@ OSError: [Errno 48] Address already in use
 2025-05-01 11:58:05 - collabgpt.app - INFO - app:138 - Stopping CollabGPT application
 2025-05-01 11:58:05 - collabgpt.app - INFO - app:143 - Stopping webhook server
 2025-05-01 11:58:06 - collabgpt.app - INFO - app:148 - CollabGPT application stopped
+2025-05-01 15:55:35 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-01 15:55:35 - collabgpt.test_llm - INFO - test_llm:26 - Testing LLM integration with OpenRouter
+2025-05-01 15:55:35 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-01 15:55:35 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-01 15:55:35 - collabgpt.test_llm - INFO - test_llm:35 - Sending test prompt to model: deepseek/deepseek-chat-v3-0324:free
+2025-05-01 15:55:39 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.35s)
+2025-05-01 15:55:39 - collabgpt.test_llm - INFO - test_llm:39 - LLM response received successfully!
+2025-05-01 15:55:39 - collabgpt.test_llm - INFO - test_llm:40 - Response: Certainly!  
+
+**CollabGPT** is an AI assistant designed to streamline and enhance document collaboration. My purpose is to help teams and individuals draft, edit, organize, and refine documents efficiently—whether you're co-authoring reports, brainstorming ideas, or polishing content. I can suggest improvements, summarize key points, resolve inconsistencies, and even assist with formatting, ensuring seamless teamwork and professional results. Let’s collaborate to make your documents clear, cohesive, and impactful!
+2025-05-01 15:55:39 - collabgpt.test_llm - INFO - test_llm:41 - Metadata: {'model': 'deepseek/deepseek-chat-v3-0324:free', 'usage': {'prompt_tokens': 40, 'completion_tokens': 95, 'total_tokens': 135, 'prompt_tokens_details': None}, 'response_time': 3.3491437435150146, 'finish_reason': 'stop'}
+2025-05-01 15:55:39 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-01 15:55:39 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-01 15:55:39 - collabgpt.test_llm - INFO - test_llm:66 - Testing document summarization template
+2025-05-01 15:55:43 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.08s)
+2025-05-01 15:55:43 - collabgpt.test_llm - INFO - test_llm:74 - Template response received successfully!
+2025-05-01 15:55:43 - collabgpt.test_llm - INFO - test_llm:75 - Summary: **Summary of CollabGPT Project Overview**  
+
+**Main Topic:**  
+CollabGPT is an AI agent designed to enhance real-time team collaboration in document editing environments, acting as an AI teammate.  
+
+**Key Features:**  
+- **Real-time document monitoring:** Tracks changes as they happen.  
+- **Change summarization:** Provides concise summaries of document updates.  
+- **Edit suggestions:** Offers recommendations for improvements.  
+- **Conflict resolution:** Helps resolve discrepancies in collaborative edits.  
+
+**Objective:**  
+To streamline teamwork by automating document collaboration tasks, reducing manual effort, and improving efficiency.  
+
+**Action Items:**  
+None explicitly mentioned, but potential next steps could include testing, deployment, or further feature development.
+2025-05-01 15:55:43 - collabgpt.test_llm - INFO - test_llm:88 - ✅ All LLM tests passed successfully!
+2025-05-01 15:55:43 - collabgpt.test_llm - INFO - test_llm:89 - The LLM integration with OpenRouter is working correctly.

@@ -108,16 +108,19 @@ class LLMInterface:
         self.temperature = settings.AI.get('temperature', 0.5)
         
         # Determine the mode based on available settings
-        if self.model_path:
-            self.mode = 'local'
-        elif self.api_key and self.api_url:
+        if self.model_path and self.api_key and self.api_url:
             self.mode = 'api'
+            self.logger = logger.get_logger("llm_interface")
+            self.logger.info(f"Using API mode with model: {self.model_path}")
+        elif self.model_path:
+            self.mode = 'local'
+            self.logger = logger.get_logger("llm_interface")
+            self.logger.info(f"Using local model: {self.model_path}")
         else:
             self.mode = 'mock'
-            logger.warning("No LLM configuration found, using mock responses")
+            self.logger = logger.get_logger("llm_interface")
+            self.logger.warning("No LLM configuration found, using mock responses")
             
-        self.logger = logger.get_logger("llm_interface")
-        
         # Templates directory
         self.templates_dir = Path(__file__).parent.parent.parent / "templates"
         if not self.templates_dir.exists():
@@ -212,20 +215,39 @@ class LLMInterface:
             An LLMResponse with the generated text
         """
         headers = {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
         }
         
-        # Add API key to headers or payload based on typical patterns
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
-            
-        payload = {
-            "prompt": prompt,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-        }
+        # Check if we're using OpenRouter API
+        is_openrouter = "openrouter.ai" in self.api_url
+        
+        if is_openrouter:
+            # Format request for OpenRouter API
+            payload = {
+                "model": self.model_path,
+                "messages": [
+                    {"role": "system", "content": "You are CollabGPT, an AI assistant that helps with document collaboration."},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "headers": {
+                    "HTTP-Referer": "https://collabgpt.app",  # Optional but good practice for OpenRouter
+                    "X-Title": "CollabGPT"                    # Optional but good practice for OpenRouter
+                }
+            }
+        else:
+            # Generic API format (customize as needed for other APIs)
+            payload = {
+                "model": self.model_path,
+                "prompt": prompt,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+            }
         
         try:
+            self.logger.debug(f"Sending request to {self.api_url}")
             start_time = time.time()
             response = requests.post(
                 self.api_url,
@@ -235,19 +257,47 @@ class LLMInterface:
             )
             elapsed_time = time.time() - start_time
             
-            response.raise_for_status()
+            self.logger.debug(f"LLM API response status: {response.status_code}")
+            
+            if response.status_code != 200:
+                self.logger.error(f"API error: {response.status_code}, {response.text}")
+                return LLMResponse("", error=f"API error: {response.status_code}, {response.text[:100]}...")
+                
             result = response.json()
             
-            # Handle different API response formats
-            # This is a generic handler, adjust for your specific API
-            if "choices" in result and len(result["choices"]) > 0:
+            # Process OpenRouter API response
+            if is_openrouter:
+                if "choices" in result and len(result["choices"]) > 0:
+                    message_content = result["choices"][0]["message"]["content"]
+                    self.logger.info(f"Got successful response from OpenRouter (elapsed: {elapsed_time:.2f}s)")
+                    return LLMResponse(
+                        message_content,
+                        metadata={
+                            "model": result.get("model", self.model_path),
+                            "usage": result.get("usage", {}),
+                            "response_time": elapsed_time,
+                            "finish_reason": result["choices"][0].get("finish_reason")
+                        }
+                    )
+                else:
+                    self.logger.error(f"Unexpected OpenRouter response format: {result}")
+                    return LLMResponse("", error="Unexpected API response format")
+            
+            # Handle other API formats
+            elif "choices" in result and len(result["choices"]) > 0:
                 # OpenAI-like format
-                text = result["choices"][0].get("text", "")
+                if "message" in result["choices"][0]:
+                    # Chat completion format
+                    text = result["choices"][0]["message"]["content"]
+                else:
+                    # Legacy completion format
+                    text = result["choices"][0].get("text", "")
+                
                 return LLMResponse(
                     text,
                     metadata={
                         "model": result.get("model", "unknown"),
-                        "tokens_generated": len(result["choices"][0].get("text", "").split()),
+                        "usage": result.get("usage", {}),
                         "response_time": elapsed_time,
                         "finish_reason": result["choices"][0].get("finish_reason")
                     }
@@ -262,6 +312,7 @@ class LLMInterface:
                 )
             else:
                 # Unknown format, return raw response
+                self.logger.warning(f"Unknown API response format: {result}")
                 return LLMResponse(
                     str(result),
                     metadata={
@@ -271,6 +322,7 @@ class LLMInterface:
                 )
                 
         except requests.exceptions.RequestException as e:
+            self.logger.error(f"API request failed: {e}")
             return LLMResponse("", error=f"API request failed: {str(e)}")
             
     def _generate_mock(self, 

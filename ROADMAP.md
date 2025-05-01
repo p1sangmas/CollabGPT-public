@@ -21,8 +21,8 @@ CollabGPT is an AI agent designed for real-time team collaboration in document e
 - [x] Implement document content analysis
 - [x] Develop simple summarization of document changes
 - [x] Create baseline RAG system for contextual understanding
-- [ ] Set up integration with chosen open source LLM
-- [ ] Build basic prompt engineering templates for different agent tasks
+- [x] Set up integration with chosen open source LLM
+- [x] Build basic prompt engineering templates for different agent tasks
 
 ### Phase 2: Core Features (Months 3-4)
 #### Collaboration Features

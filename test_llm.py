@@ -1,167 +1,99 @@
 #!/usr/bin/env python3
 """
-Test script for CollabGPT LLM integration.
-This script helps verify that the language model integration works properly.
+Test script for LLM integration with OpenRouter.
+
+This script validates that the LLM interface can successfully
+connect to OpenRouter and generate responses using the DeepSeek model.
 """
 
-import os
 import sys
-from dotenv import load_dotenv
+import os
+from pathlib import Path
+import time
 
-# Load environment variables
+# Add root directory to path to allow importing the CollabGPT package
+root_dir = Path(__file__).parent
+sys.path.append(str(root_dir))
+
+from dotenv import load_dotenv
 load_dotenv()
 
 from src.models.llm_interface import LLMInterface
-from src.models.rag_system import RAGSystem, DocumentChunk
 from src.utils import logger
 
-def test_llm_interface():
-    """Test basic LLM functionality."""
-    print("Testing LLM Interface...")
-    
-    # Create LLM interface
+# Configure logging
+logger = logger.get_logger("test_llm")
+logger.info("Testing LLM integration with OpenRouter")
+
+def test_basic_prompt():
+    """Test a basic prompt to verify LLM is working."""
     llm = LLMInterface()
     
-    print(f"LLM mode: {llm.mode}")
+    # Basic test prompt
+    prompt = "You are CollabGPT, an AI assistant for document collaboration. Please write a brief paragraph explaining your purpose."
     
-    # Test basic prompt
-    print("\nTesting basic prompt generation...")
-    test_prompt = "Summarize the benefits of collaborative document editing."
-    
-    response = llm.generate(test_prompt)
+    logger.info(f"Sending test prompt to model: {llm.model_path}")
+    response = llm.generate(prompt, max_tokens=200)
     
     if response.success:
-        print(f"✅ Successfully generated response:")
-        print(f"---\n{response.text}\n---")
+        logger.info("LLM response received successfully!")
+        logger.info(f"Response: {response.text}")
+        logger.info(f"Metadata: {response.metadata}")
+        return True
     else:
-        print(f"❌ Generation failed: {response.error}")
-        
-    # Test template-based prompt
-    print("\nTesting template-based prompt...")
-    
-    # First check if templates exist
-    template_name = "summarize_document"
-    template = llm.get_template(template_name)
-    
-    if template:
-        print(f"✅ Found template: {template_name}")
-        
-        # Test generating with template
-        response = llm.generate_with_template(
-            template_name,
-            document_content="This is a test document about collaborative editing. "
-                           "It discusses the benefits of real-time collaboration "
-                           "and how AI can enhance the experience."
-        )
-        
-        if response.success:
-            print(f"✅ Successfully generated template-based response:")
-            print(f"---\n{response.text}\n---")
-        else:
-            print(f"❌ Template-based generation failed: {response.error}")
-    else:
-        print(f"❌ Template not found: {template_name}")
-        
-    return llm
+        logger.error(f"LLM response failed: {response.error}")
+        return False
 
-def test_rag_system():
-    """Test basic RAG functionality."""
-    print("\nTesting RAG System...")
+def test_template_prompt():
+    """Test a template-based prompt."""
+    llm = LLMInterface()
     
-    # Create RAG system
-    rag = RAGSystem()
+    # Sample document content for testing
+    document_content = """
+    # CollabGPT Project Overview
     
-    # Create test document
-    doc_id = "test_doc_001"
-    content = """
-    # Document Collaboration Best Practices
+    CollabGPT is an AI agent designed for real-time team collaboration in document editing environments. 
+    It aims to become an AI teammate that joins collaborative documents, summarizes changes, 
+    suggests edits, and helps resolve conflicts.
     
-    ## Introduction
-    This document outlines best practices for team collaboration on shared documents.
-    
-    ## Real-time Editing
-    Real-time editing allows multiple team members to work on a document simultaneously.
-    This improves efficiency and reduces version control issues.
-    
-    ## Comment Systems
-    Using comments effectively helps maintain clear communication about specific parts
-    of a document without altering the main content.
-    
-    ## Version History
-    Always maintain a clear version history to track changes and revert if necessary.
+    ## Features
+    - Real-time document monitoring
+    - Change summarization
+    - Edit suggestions
+    - Conflict resolution
     """
     
-    # Process document
-    print("Processing test document...")
-    chunk_ids = rag.process_document(
-        doc_id=doc_id,
-        content=content,
-        metadata={"title": "Document Collaboration Best Practices"}
+    logger.info("Testing document summarization template")
+    response = llm.generate_with_template(
+        "summarize_document",
+        document_content=document_content,
+        max_tokens=200
     )
     
-    print(f"✅ Document processed into {len(chunk_ids)} chunks")
-    
-    # Test retrieval
-    print("\nTesting context retrieval...")
-    query = "best practices for comments in documents"
-    context = rag.get_relevant_context(query, doc_id=doc_id)
-    
-    if context:
-        print(f"✅ Successfully retrieved context:")
-        print(f"---\n{context[:200]}...\n---")
-    else:
-        print("❌ Failed to retrieve relevant context")
-        
-    return rag
-
-def test_llm_with_rag(llm, rag):
-    """Test combining LLM with RAG."""
-    if not llm or not rag:
-        return
-        
-    print("\nTesting LLM with RAG integration...")
-    
-    # Define a query
-    query = "suggestions for improving document collaboration"
-    
-    # Get relevant context
-    context = rag.get_relevant_context(query)
-    
-    # Create prompt with context
-    prompt = f"""
-    Please provide suggestions for improving document collaboration based on the following context:
-    
-    {context}
-    
-    Suggestions:
-    """
-    
-    # Generate response
-    response = llm.generate(prompt)
-    
     if response.success:
-        print(f"✅ Successfully generated RAG-enhanced response:")
-        print(f"---\n{response.text}\n---")
+        logger.info("Template response received successfully!")
+        logger.info(f"Summary: {response.text}")
+        return True
     else:
-        print(f"❌ RAG-enhanced generation failed: {response.error}")
-
-def main():
-    """Run the LLM and RAG tests."""
-    print("CollabGPT LLM and RAG Test")
-    print("==========================\n")
-    
-    # Test LLM interface
-    llm = test_llm_interface()
-    
-    # Test RAG system
-    rag = test_rag_system()
-    
-    # Test combined LLM+RAG
-    if llm and rag:
-        test_llm_with_rag(llm, rag)
-    
-    print("\nLLM and RAG testing completed!")
-    return 0
+        logger.error(f"Template response failed: {response.error}")
+        return False
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # Run the tests
+    basic_test_success = test_basic_prompt()
+    template_test_success = test_template_prompt()
+    
+    # Report results
+    if basic_test_success and template_test_success:
+        logger.info("✅ All LLM tests passed successfully!")
+        logger.info("The LLM integration with OpenRouter is working correctly.")
+        sys.exit(0)
+    else:
+        logger.error("❌ Some LLM tests failed.")
+        tests_failed = []
+        if not basic_test_success:
+            tests_failed.append("Basic prompt test")
+        if not template_test_success:
+            tests_failed.append("Template prompt test")
+        logger.error(f"Failed tests: {', '.join(tests_failed)}")
+        sys.exit(1)
