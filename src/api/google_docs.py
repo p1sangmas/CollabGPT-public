@@ -155,6 +155,90 @@ class GoogleDocsAPI:
             print(f"Error updating document: {error}")
             return {}
     
+    def update_document_content(self, document_id: str, content: str) -> bool:
+        """
+        Update the entire content of a document with the provided text.
+        
+        Args:
+            document_id: The Google Doc ID
+            content: The new document content as plain text
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not self.service:
+                raise ValueError("Not authenticated. Call authenticate() first.")
+            
+            # A simpler approach that's less likely to cause range errors:
+            # Instead of trying to delete all content and then insert new content,
+            # we'll just use a single insertText with replaceAllText flag
+                
+            insert_request = {
+                'insertText': {
+                    'location': {
+                        'index': 1  # Start at the beginning of the document
+                    },
+                    'text': content
+                }
+            }
+            
+            # First, get the document to check if it exists
+            doc = self.get_document(document_id)
+            if not doc:
+                return False
+                
+            # If the document exists but is empty, just insert the content
+            if not self.get_document_content(document_id).strip():
+                result = self.update_document(document_id, [insert_request])
+                return bool(result)
+            
+            # Otherwise, use replaceAllText to replace entire content
+            replace_request = {
+                'replaceAllText': {
+                    'replaceText': content,
+                    'containsText': {
+                        'text': '.*',
+                        'matchCase': False
+                    }
+                }
+            }
+            
+            # Execute the request
+            result = self.update_document(document_id, [replace_request])
+            
+            # If replace didn't work, fall back to a different approach
+            if not result:
+                # Try another approach - first delete content then insert new
+                # Get current content and create a delete request that's more conservative
+                current_content = self.get_document_content(document_id)
+                
+                # Create requests
+                requests = []
+                
+                if current_content:
+                    # Only delete if there's content
+                    requests.append({
+                        'deleteContentRange': {
+                            'range': {
+                                'startIndex': 1,
+                                'endIndex': min(len(current_content), 1000000)  # Safer limit
+                            }
+                        }
+                    })
+                
+                # Add the insert request
+                requests.append(insert_request)
+                
+                # Execute the requests
+                result = self.update_document(document_id, requests)
+            
+            return bool(result)
+            
+        except Exception as error:
+            print(f"Error updating document content: {error}")
+            return False
+    
     def watch_document(self, document_id: str, webhook_url: str) -> Dict[str, Any]:
         """
         Set up a webhook to monitor changes to a document.
@@ -316,4 +400,32 @@ class GoogleDocsAPI:
             
         except HttpError as error:
             print(f"Error retrieving revision history: {error}")
+            return []
+
+    def list_recent_documents(self, max_results: int = 10) -> List[Dict[str, Any]]:
+        """
+        List recently modified documents accessible to the user.
+        
+        Args:
+            max_results: Maximum number of documents to return
+            
+        Returns:
+            List of document metadata
+        """
+        try:
+            if not self.drive_service:
+                raise ValueError("Not authenticated. Call authenticate() first.")
+                
+            # Query files of type Google Docs
+            results = self.drive_service.files().list(
+                q="mimeType='application/vnd.google-apps.document'",
+                orderBy="modifiedTime desc",
+                pageSize=max_results,
+                fields="files(id, name, modifiedTime, lastModifyingUser)"
+            ).execute()
+            
+            return results.get('files', [])
+            
+        except HttpError as error:
+            print(f"Error listing recent documents: {error}")
             return []

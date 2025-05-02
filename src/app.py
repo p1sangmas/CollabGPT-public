@@ -20,9 +20,13 @@ from urllib.parse import urlparse, parse_qs
 from .api.google_docs import GoogleDocsAPI
 from .services.webhook_handler import WebhookHandler
 from .services.document_analyzer import DocumentAnalyzer
+from .services.conflict_detector import ConflictDetector, ConflictType
+from .services.activity_tracker import UserActivityTracker, ActivityType
+from .services.comment_analyzer import CommentAnalyzer, CommentCategory
 from .models.rag_system import RAGSystem
 from .models.llm_interface import LLMInterface, LLMResponse
 from .utils import logger
+from .utils.performance import get_performance_monitor
 from .config import settings
 
 
@@ -40,8 +44,12 @@ class CollabGPT:
         self.google_docs_api = None
         self.webhook_handler = None
         self.document_analyzer = None
+        self.conflict_detector = None
+        self.activity_tracker = None
+        self.comment_analyzer = None
         self.rag_system = None
         self.llm_interface = None
+        self.performance_monitor = get_performance_monitor()
         
         # Webhook server
         self.webhook_server = None
@@ -71,6 +79,24 @@ class CollabGPT:
                 language=settings.DOCUMENT.get('default_language', 'english')
             )
             
+            # Initialize Phase 2 components
+            
+            # Initialize conflict detector
+            self.logger.info("Initializing Conflict Detector")
+            self.conflict_detector = ConflictDetector(
+                conflict_window_seconds=settings.COLLABORATION.get('conflict_window_seconds', 60)
+            )
+            
+            # Initialize activity tracker
+            self.logger.info("Initializing User Activity Tracker")
+            self.activity_tracker = UserActivityTracker(
+                activity_retention_days=settings.COLLABORATION.get('activity_retention_days', 14)
+            )
+            
+            # Initialize comment analyzer
+            self.logger.info("Initializing Comment Analyzer")
+            self.comment_analyzer = CommentAnalyzer()
+            
             # Initialize RAG system if enabled
             if settings.AI.get('rag_enabled', True):
                 self.logger.info("Initializing RAG System")
@@ -96,7 +122,7 @@ class CollabGPT:
             return True
             
         except Exception as e:
-            self.logger.error(f"Initialization error: {e}")
+            self.logger.error(f"Initialization error: {e}", exc_info=True)
             return False
     
     def start(self) -> bool:
@@ -129,7 +155,7 @@ class CollabGPT:
             return True
             
         except Exception as e:
-            self.logger.error(f"Startup error: {e}")
+            self.logger.error(f"Startup error: {e}", exc_info=True)
             self.running = False
             return False
     
@@ -144,6 +170,11 @@ class CollabGPT:
             self.webhook_server.shutdown()
             if self.webhook_thread and self.webhook_thread.is_alive():
                 self.webhook_thread.join(timeout=5.0)
+                
+        # Log performance metrics before shutdown
+        if self.performance_monitor:
+            metrics = self.performance_monitor.get_metrics()
+            self.logger.info(f"Performance metrics at shutdown: {metrics}")
                 
         self.logger.info("CollabGPT application stopped")
     
@@ -190,6 +221,19 @@ class CollabGPT:
             else:
                 analysis['ai_summary'] = "Failed to generate AI summary"
                 
+        # Process document comments if any
+        if 'comments' in document:
+            comments = document.get('comments', [])
+            if comments:
+                self.logger.info(f"Processing {len(comments)} comments for document {document_id}")
+                comment_threads = self.comment_analyzer.process_comments(document_id, comments)
+                analysis['comment_analysis'] = {
+                    'thread_count': len(comment_threads),
+                    'unresolved_threads': len(self.comment_analyzer.get_unresolved_threads(document_id)),
+                    'categories': {cat.name: len(self.comment_analyzer.get_threads_by_category(document_id, cat)) 
+                                  for cat in CommentCategory}
+                }
+                
         # Update monitored documents
         if document_id not in self.monitored_documents:
             self.monitored_documents[document_id] = {
@@ -202,12 +246,21 @@ class CollabGPT:
                 document_id, 
                 document.get('title', document_id)
             )
+            
+        # Track system user viewing activity (for initial processing)
+        self.activity_tracker.track_activity(
+            user_id="system",
+            document_id=document_id,
+            activity_type=ActivityType.VIEW,
+            sections=[section['title'] for section in analysis.get('sections', [])]
+        )
         
         return analysis
     
     def process_document_changes(self, document_id: str, 
                                 previous_content: str, 
-                                current_content: str) -> Dict[str, Any]:
+                                current_content: str,
+                                user_id: str = "unknown") -> Dict[str, Any]:
         """
         Process changes between document versions.
         
@@ -215,38 +268,88 @@ class CollabGPT:
             document_id: The document identifier
             previous_content: The previous version content
             current_content: The current version content
+            user_id: The identifier of the user who made the changes
             
         Returns:
             Dictionary containing change analysis results
         """
-        self.logger.info(f"Analyzing changes for document: {document_id}")
-        
-        # Analyze changes
-        change_analysis = self.document_analyzer.analyze_changes(
-            document_id, previous_content, current_content
-        )
-        
-        # Generate change summary using LLM
-        if self.llm_interface:
-            summary_response = self.llm_interface.generate_with_template(
-                "summarize_changes",
-                previous_content=previous_content,
-                current_content=current_content
+        with self.performance_monitor.measure_latency("process_document_changes"):
+            self.logger.info(f"Analyzing changes for document: {document_id}")
+            
+            # Analyze changes
+            change_analysis = self.document_analyzer.analyze_changes(
+                document_id, previous_content, current_content
             )
             
-            if summary_response.success:
-                change_analysis['ai_change_summary'] = summary_response.text
+            # Record edit in conflict detector
+            if self.conflict_detector:
+                affected_sections = [section['title'] for section in 
+                                    change_analysis.get('changes', {}).get('changed_sections', [])]
                 
-        # Update RAG system with new content
-        if self.rag_system:
-            if document_id in self.monitored_documents:
-                metadata = {
-                    "title": self.monitored_documents[document_id].get('name', document_id),
-                    "last_updated": time.time(),
+                edit_id = self.conflict_detector.record_edit(
+                    document_id, 
+                    user_id, 
+                    previous_content, 
+                    current_content,
+                    affected_sections
+                )
+                
+                # Check for conflicts
+                conflicts = self.conflict_detector.get_conflicts(document_id)
+                if conflicts:
+                    self.logger.warning(f"Detected {len(conflicts)} conflicts in document {document_id}")
+                    change_analysis['conflicts'] = [
+                        {
+                            'id': conflict.conflict_id,
+                            'type': conflict.conflict_type.name,
+                            'severity': conflict.severity,
+                            'description': conflict.description,
+                            'suggested_resolution': conflict.suggested_resolution
+                        }
+                        for conflict in conflicts
+                    ]
+            
+            # Track user activity
+            if self.activity_tracker:
+                content_length_diff = len(current_content) - len(previous_content)
+                affected_sections = [section['title'] for section in 
+                                    change_analysis.get('changes', {}).get('changed_sections', [])]
+                
+                # Create metadata with content length instead of passing it as parameter
+                activity_metadata = {
+                    'content_length_diff': content_length_diff,
+                    'importance': change_analysis.get('changes', {}).get('importance', {})
                 }
-                self.rag_system.process_document(document_id, current_content, metadata)
-        
-        return change_analysis
+                
+                self.activity_tracker.track_activity(
+                    user_id=user_id,
+                    document_id=document_id,
+                    activity_type=ActivityType.EDIT,
+                    sections=affected_sections,
+                    metadata=activity_metadata
+                )
+            
+            # Generate change summary using LLM
+            if self.llm_interface:
+                summary_response = self.llm_interface.generate_with_template(
+                    "summarize_changes",
+                    previous_content=previous_content,
+                    current_content=current_content
+                )
+                
+                if summary_response.success:
+                    change_analysis['ai_change_summary'] = summary_response.text
+                    
+            # Update RAG system with new content
+            if self.rag_system:
+                if document_id in self.monitored_documents:
+                    metadata = {
+                        "title": self.monitored_documents[document_id].get('name', document_id),
+                        "last_updated": time.time(),
+                    }
+                    self.rag_system.process_document(document_id, current_content, metadata)
+            
+            return change_analysis
     
     def suggest_edits(self, document_id: str, section_title: str = None) -> LLMResponse:
         """
@@ -280,20 +383,43 @@ class CollabGPT:
             if not section_content:
                 return LLMResponse("", error=f"Section not found: {section_title}")
                 
-            # Generate suggestions for the specific section
+            # Get section history from RAG system if available
+            section_history = ""
+            if self.rag_system:
+                # Get document history for the specific section
+                history_data = self.rag_system.get_document_history(document_id, section_title)
+                
+                if history_data and "sections" in history_data and history_data["sections"]:
+                    section_history = "Document History:\n"
+                    for section_info in history_data["sections"]:
+                        section_history += f"- Section: {section_info['section']}\n"
+                        section_history += f"- Current Version: {section_info['current_version']}\n"
+                        
+                        if section_info.get("changes"):
+                            section_history += "- Previous changes:\n"
+                            for change in section_info["changes"]:
+                                section_history += f"  - Version {change['version']} ({change['timestamp']}): "
+                                section_history += f"{change['content_snippet']}\n"
+            
+            # Generate suggestions for the specific section with history context
             return self.llm_interface.generate_with_template(
                 "suggest_edits",
                 section_title=section_title,
-                section_content=section_content
+                section_content=section_content,
+                section_history=section_history if section_history else "No previous versions available."
             )
         else:
-            # Get relevant context from RAG if available
+            # Get relevant context from RAG with history included
             context = ""
             if self.rag_system:
                 context = self.rag_system.get_relevant_context(
                     "document suggestions improvements", 
-                    doc_id=document_id
+                    doc_id=document_id,
+                    include_history=True
                 )
+            
+            # Get collaboration context if available
+            collab_context = self._get_collaboration_context(document_id)
             
             # Generate suggestions for the whole document
             prompt = (
@@ -302,11 +428,58 @@ class CollabGPT:
             )
             
             if context:
-                prompt += f"Additional context:\n{context}\n\n"
+                prompt += f"Additional context with document history:\n{context}\n\n"
+                
+            if collab_context:
+                prompt += f"Collaboration context:\n{collab_context}\n\n"
                 
             prompt += "Suggestions:"
             
             return self.llm_interface.generate(prompt)
+    
+    def get_document_activity(self, document_id: str, hours: int = 24) -> Dict[str, Any]:
+        """
+        Get activity information for a document.
+        
+        Args:
+            document_id: The document identifier
+            hours: Time window in hours
+            
+        Returns:
+            Dictionary with activity information
+        """
+        if not self.activity_tracker:
+            return {"error": "Activity tracker not initialized"}
+            
+        # Get active users
+        active_users = self.activity_tracker.get_active_users(document_id, hours)
+        
+        # Get comment statistics if comment analyzer is available
+        comment_stats = {}
+        if self.comment_analyzer:
+            comment_stats = self.comment_analyzer.get_comment_statistics(document_id)
+            
+        # Get conflicts if conflict detector is available
+        conflicts = []
+        if self.conflict_detector:
+            conflicts = [
+                {
+                    'id': conflict.conflict_id,
+                    'type': conflict.conflict_type.name,
+                    'severity': conflict.severity,
+                    'description': conflict.description,
+                    'resolved': conflict.resolved
+                }
+                for conflict in self.conflict_detector.get_conflicts(document_id, resolved=True)
+            ]
+        
+        return {
+            'document_id': document_id,
+            'window_hours': hours,
+            'active_users': active_users,
+            'comment_statistics': comment_stats,
+            'conflicts': conflicts
+        }
     
     def _register_event_handlers(self) -> None:
         """Register event handlers for webhooks."""
@@ -330,28 +503,47 @@ class CollabGPT:
         Args:
             change_data: Information about the document change
         """
-        document_id = change_data.get('document_id')
-        current_content = change_data.get('current_content', '')
-        previous_content = change_data.get('previous_content', '')
-        
-        self.logger.info(f"Document change detected: {document_id}")
-        
-        # Skip processing if no significant changes
-        if previous_content and current_content == previous_content:
-            self.logger.info("No significant changes detected")
-            return
+        with self.performance_monitor.measure_latency("handle_document_change"):
+            document_id = change_data.get('document_id')
+            current_content = change_data.get('current_content', '')
+            previous_content = change_data.get('previous_content', '')
             
-        # Process the changes
-        change_analysis = self.process_document_changes(
-            document_id, previous_content, current_content
-        )
-        
-        self.logger.info(f"Change analysis completed: {document_id}")
-        if 'ai_change_summary' in change_analysis:
-            self.logger.info(f"AI summary: {change_analysis['ai_change_summary']}")
+            # Extract user information if available
+            metadata = change_data.get('metadata', {})
+            user_id = metadata.get('user_id', 'unknown')
             
-        # Here you would implement notification logic, UI updates, etc.
-        # This is a simple placeholder that logs the summary
+            self.logger.info(f"Document change detected: {document_id} by user {user_id}")
+            
+            # Skip processing if no significant changes
+            if previous_content and current_content == previous_content:
+                self.logger.info("No significant changes detected")
+                return
+                
+            # Process the changes
+            change_analysis = self.process_document_changes(
+                document_id, previous_content, current_content, user_id
+            )
+            
+            self.logger.info(f"Change analysis completed: {document_id}")
+            
+            # Extract importance level for logging
+            importance = change_analysis.get('changes', {}).get('importance', {})
+            importance_level = importance.get('level', 'UNKNOWN')
+            
+            self.logger.info(f"Change importance: {importance_level}")
+            
+            if 'ai_change_summary' in change_analysis:
+                self.logger.info(f"AI summary: {change_analysis['ai_change_summary']}")
+                
+            # Check for conflicts
+            if 'conflicts' in change_analysis and change_analysis['conflicts']:
+                conflict_count = len(change_analysis['conflicts'])
+                self.logger.warning(f"Detected {conflict_count} conflicts in document {document_id}")
+                
+                # Here you would implement notification logic for conflicts
+                
+            # Here you would implement notification logic, UI updates, etc.
+            # This is a simple placeholder that logs the summary
     
     def _handle_document_comment(self, comment_data: Dict[str, Any]) -> None:
         """
@@ -360,19 +552,109 @@ class CollabGPT:
         Args:
             comment_data: Information about the document comment
         """
-        document_id = comment_data.get('document_id')
-        comments = comment_data.get('comments', [])
+        with self.performance_monitor.measure_latency("handle_document_comment"):
+            document_id = comment_data.get('document_id')
+            comments = comment_data.get('comments', [])
+            
+            self.logger.info(f"Document comment event: {document_id}, {len(comments)} comments")
+            
+            # Process comments with the comment analyzer
+            if self.comment_analyzer and comments:
+                threads = self.comment_analyzer.process_comments(document_id, comments)
+                self.logger.info(f"Processed {len(threads)} comment threads for document {document_id}")
+                
+                # Track user activity for each comment author
+                if self.activity_tracker:
+                    for comment in comments:
+                        author = comment.get('author', {}).get('id')
+                        if author:
+                            self.activity_tracker.track_activity(
+                                user_id=author,
+                                document_id=document_id,
+                                activity_type=ActivityType.COMMENT,
+                                metadata=comment
+                            )
+            
+            # Check if any comments are addressed to CollabGPT
+            for comment in comments:
+                content = comment.get('content', '').lower()
+                author = comment.get('author', {}).get('id', 'unknown')
+                
+                # Look for mentions or commands
+                if '@collabgpt' in content or '#collabgpt' in content:
+                    self.logger.info(f"CollabGPT mentioned in comment by {author}: {content}")
+                    # Here you would implement the logic to respond to comments
+                    # This is a placeholder
+                    
+                    # Track as a user activity for the AI agent to help with contextual awareness
+                    if self.activity_tracker:
+                        self.activity_tracker.track_activity(
+                            user_id="collabgpt",
+                            document_id=document_id,
+                            activity_type=ActivityType.COMMENT,
+                            metadata={"reply_to": author}
+                        )
+    
+    def _get_collaboration_context(self, document_id: str) -> str:
+        """
+        Get collaboration context for a document to inform the LLM.
         
-        self.logger.info(f"Document comment event: {document_id}, {len(comments)} comments")
+        Args:
+            document_id: The document identifier
+            
+        Returns:
+            Collaborative context as a string
+        """
+        context_parts = []
         
-        # Check if any comments are addressed to CollabGPT
-        for comment in comments:
-            content = comment.get('content', '').lower()
-            # Look for mentions or commands
-            if '@collabgpt' in content or '#collabgpt' in content:
-                self.logger.info(f"CollabGPT mentioned in comment: {content}")
-                # Here you would implement the logic to respond to comments
-                # This is a placeholder
+        # Get active users if activity tracker is available
+        if self.activity_tracker:
+            active_users = self.activity_tracker.get_active_users(document_id, 24)
+            if active_users:
+                context_parts.append(f"Document has {len(active_users)} active users in the last 24 hours.")
+                
+                # Get most active user
+                most_active = active_users[0] if active_users else None
+                if most_active:
+                    user_id = most_active.get('user_id')
+                    context_parts.append(f"User {user_id} is most active with {most_active.get('total_activities', 0)} activities.")
+                    
+                    # Add focused sections
+                    focused_sections = most_active.get('focused_sections', [])
+                    if focused_sections:
+                        context_parts.append(f"Main focus has been on sections: {', '.join(focused_sections[:3])}.")
+        
+        # Get unresolved comments if comment analyzer is available
+        if self.comment_analyzer:
+            unresolved = self.comment_analyzer.get_unresolved_threads(document_id)
+            if unresolved:
+                context_parts.append(f"Document has {len(unresolved)} unresolved comment threads.")
+                
+                # Categorize by type
+                questions = [t for t in unresolved if CommentCategory.QUESTION in t.categories]
+                suggestions = [t for t in unresolved if CommentCategory.SUGGESTION in t.categories]
+                
+                if questions:
+                    context_parts.append(f"There are {len(questions)} unanswered questions.")
+                if suggestions:
+                    context_parts.append(f"There are {len(suggestions)} pending suggestions.")
+        
+        # Get conflicts if conflict detector is available
+        if self.conflict_detector:
+            conflicts = self.conflict_detector.get_conflicts(document_id)
+            if conflicts:
+                context_parts.append(f"Document has {len(conflicts)} unresolved editing conflicts.")
+                
+                # Add most severe conflict
+                severe_conflicts = [c for c in conflicts if c.severity >= 4]
+                if severe_conflicts:
+                    context_parts.append(f"Most severe conflict: {severe_conflicts[0].description}")
+        
+        # Combine all context parts
+        if context_parts:
+            return "\n".join(context_parts)
+        else:
+            return ""
     
     def _start_webhook_server(self) -> None:
         """Start the webhook server to receive document change notifications."""

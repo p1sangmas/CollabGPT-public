@@ -471,3 +471,27 @@ class LLMInterface:
         
         # Generate response
         return self.generate(prompt, max_tokens, temperature)
+
+    def is_available(self) -> bool:
+        """
+        Check if the LLM interface is properly configured and available for use.
+        
+        Returns:
+            Boolean indicating whether the LLM is available (not in mock mode)
+        """
+        # If we're in mock mode, LLM is not truly available
+        return self.mode != 'mock'
+
+    def generate_text(self, prompt: str, max_tokens: int = 500, temperature: float = None) -> LLMResponse:
+        """
+        Generate text from a prompt (alias for generate method to support the test script).
+        
+        Args:
+            prompt: The input prompt
+            max_tokens: Maximum number of tokens to generate
+            temperature: Sampling temperature (overrides default)
+            
+        Returns:
+            An LLMResponse object containing the generated text or error
+        """
+        return self.generate(prompt, max_tokens, temperature)

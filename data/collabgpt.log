@@ -1643,3 +1643,1009 @@ To streamline teamwork by automating document collaboration tasks, reducing manu
 None explicitly mentioned, but potential next steps could include testing, deployment, or further feature development.
 2025-05-01 15:55:43 - collabgpt.test_llm - INFO - test_llm:88 - ✅ All LLM tests passed successfully!
 2025-05-01 15:55:43 - collabgpt.test_llm - INFO - test_llm:89 - The LLM integration with OpenRouter is working correctly.
+2025-05-01 17:16:35 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-01 17:17:02 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 10s window
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit c1e8b890-cb11-406c-9822-e82cb1acb21a by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 1']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 5e92073b-2436-4122-a206-c2a8372edff4 by user user2 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 1']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 1 recent edits
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-01 17:17:02 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:189 - Marked conflict 7df0bfbe-f88d-4c1e-99d0-459c8ee5ce16 as resolved by admin
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:190 - Resolution method: Manual merge of both users' changes
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 10s window
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 724b383a-178f-4493-a9e7-41de242dfc29 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 1']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 81ffffab-5e1e-48a9-87f8-7d4d7217e10b by user user2 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 1']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 1 recent edits
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-01 17:17:02 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 10s window
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 47c1114c-bf48-4acc-b2ee-aa7ab4a12c11 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Introduction']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 810b4f21-2110-43d5-8ad1-b5549e14f002 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Introduction']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit e96338b0-4825-45d1-81d2-3399e04dd505 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Introduction']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 10s window
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 0ddda8d3-c3ca-466a-b7b8-a6b3a6cae0a7 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 1']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 10s window
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 591073a0-d560-465d-b36c-976a8adc1fa5 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 2']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 8bf73de1-ab52-4b80-a163-9f9917e34525 by user user2 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 2']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 1 recent edits
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-01 17:17:02 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 10s window
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 4d884eb2-7942-4c39-bc1f-7770fe5ce475 by user user1 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Section 1', 'Section 2', 'Section 3']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 9de21067-e7a2-43aa-b7cf-483a2ff93996 by user user2 for document test_doc_001
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['New Section 4']
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 1 recent edits
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-01 17:17:02 - collabgpt.conflict_detector - INFO - conflict_detector:448 - Possible structural conflict: Both user2 and user1 made structural changes
+2025-05-01 17:17:02 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 3 conflicts for document test_doc_001
+2025-05-02 19:47:51 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 19:47:53 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 19:47:53 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 19:47:53 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 19:47:53 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 19:47:53 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 19:47:53 - collabgpt.app - INFO - app:833 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 19:48:09 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 19:48:10 - collabgpt - INFO - logger:86 - Starting CollabGPT
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 19:48:10 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 19:48:10 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 19:48:10 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 19:48:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 19:48:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:833 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:666 - Starting webhook server on port 8000, path: /webhook
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:776 - Webhook server started on port 8000
+2025-05-02 19:48:10 - collabgpt.app - INFO - app:778 - External webhook URL: https://8a01-2001-d08-dc-8ef-d5ef-9126-36cc-f824.ngrok-free.app/webhook
+2025-05-02 19:48:11 - collabgpt.app - INFO - app:805 - Webhook set up for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 19:48:11 - collabgpt.app - INFO - app:154 - CollabGPT application started successfully
+2025-05-02 19:48:32 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 19:48:33 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 19:48:33 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 19:48:33 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 19:48:33 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 19:48:33 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 19:48:33 - collabgpt.app - INFO - app:833 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 19:52:24 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 19:52:25 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 19:52:25 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 19:52:25 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 19:52:25 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 19:52:25 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 19:52:25 - collabgpt.app - INFO - app:833 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 19:54:25 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 19:54:26 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 19:54:26 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 19:54:26 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 19:54:26 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 19:54:26 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 19:54:26 - collabgpt.app - INFO - app:833 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 19:54:30 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 19:54:30 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit aacd29f0-9c8d-4e35-b267-a05c505998c4 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 19:54:30 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 19:54:30 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 19:59:40 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 19:59:41 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 19:59:41 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 19:59:41 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 19:59:41 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 19:59:41 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 19:59:41 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 19:59:45 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 19:59:45 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 71510f86-b100-4eef-9ca4-2d1092c38b0f by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 19:59:45 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 19:59:45 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 19:59:48 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.13s)
+2025-05-02 19:59:48 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 2
+2025-05-02 19:59:48 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:12:28 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:12:29 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:12:29 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:12:29 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:12:29 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:12:29 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:12:29 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:12:32 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:12:32 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 58ecb804-39ea-4b0e-a383-c222666c8d37 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:12:32 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:12:32 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:12:35 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.46s)
+2025-05-02 20:12:35 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 3
+2025-05-02 20:12:35 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:19:21 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:19:22 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:19:22 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:19:22 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:19:22 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:19:22 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:19:22 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:19:26 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:26 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 80d0c09e-2554-4625-ba11-8db2b08b3e07 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:26 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:19:26 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:19:31 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.52s)
+2025-05-02 20:19:31 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 4
+2025-05-02 20:19:31 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:19:35 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:35 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 56b7cac1-4cb1-4893-b034-564c3ff78597 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:35 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 20:19:35 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:19:37 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 2.30s)
+2025-05-02 20:19:37 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 5
+2025-05-02 20:19:37 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 20:19:38 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:38 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit ae3a405f-7b36-43fe-a1ea-04046244af7d by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:38 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:19:38 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 20:19:38 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:19:38 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:19:38 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:38 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:42 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.57s)
+2025-05-02 20:19:42 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 6
+2025-05-02 20:19:42 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:19:42 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 516c18b5-590a-45e0-952d-96657e22096f by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:19:42 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 20:19:42 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:42 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:19:47 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.64s)
+2025-05-02 20:19:47 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 7
+2025-05-02 20:19:47 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:28:48 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:28:49 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:28:49 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:28:49 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:28:49 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:28:49 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:28:49 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:28:52 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:28:52 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 8f801a0d-9b10-4915-b4c2-8beaa0629814 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:28:52 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:28:52 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:28:57 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.91s)
+2025-05-02 20:28:57 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 8
+2025-05-02 20:28:57 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:29:00 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:00 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 24c27a56-e345-47c9-98ac-bc51c6ab0774 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:00 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 20:29:00 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:29:04 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.12s)
+2025-05-02 20:29:04 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 9
+2025-05-02 20:29:04 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 20:29:05 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:05 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit cd8938f7-0593-4049-817a-3085b5a0eac9 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:05 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:29:05 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 20:29:05 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:29:05 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:29:05 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:05 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:15 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 9.62s)
+2025-05-02 20:29:15 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 10
+2025-05-02 20:29:15 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:29:15 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 8ad10c9d-8299-42b3-a5aa-71807985885f by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:29:15 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 20:29:15 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:15 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:21 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.75s)
+2025-05-02 20:29:21 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 11
+2025-05-02 20:29:21 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:29:22 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:29:22 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 20:33:45 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:33:47 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:33:47 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:33:47 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:33:47 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:33:47 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:33:47 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:33:50 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:33:50 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit cd8123b2-41ba-497c-a695-6446afdde1aa by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:33:50 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:33:50 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:33:55 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.61s)
+2025-05-02 20:33:55 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 12
+2025-05-02 20:33:55 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:33:58 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:33:58 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 4946a0aa-67d4-4060-b762-1cd98eadbbcc by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:33:58 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 20:33:58 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:34:01 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 2.74s)
+2025-05-02 20:34:01 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 13
+2025-05-02 20:34:01 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 20:34:02 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit a25d5d23-c7c4-4c10-8443-0968eba55bb2 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:34:02 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 20:34:02 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:34:02 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:34:02 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:02 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:12 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 9.72s)
+2025-05-02 20:34:12 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 14
+2025-05-02 20:34:12 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:34:12 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 8281226f-8882-4029-9366-d615d96b9820 by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:34:12 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 20:34:12 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:12 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:15 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 2.84s)
+2025-05-02 20:34:15 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 15
+2025-05-02 20:34:15 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:34:16 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:34:16 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 20:34:16 - collabgpt.app - INFO - app:564 - Processed 4 comment threads for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:11 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:40:12 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:40:12 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:40:12 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:40:12 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:40:12 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:40:12 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:40:14 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:14 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 328657c8-fbbe-4ae8-a523-d36664f8ca00 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:14 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:40:14 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:40:19 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.34s)
+2025-05-02 20:40:19 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 16
+2025-05-02 20:40:19 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:40:22 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:22 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 0639cf0c-8cef-4bff-9300-b02bdbf983b8 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:22 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 20:40:22 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:40:50 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 27.96s)
+2025-05-02 20:40:50 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 17
+2025-05-02 20:40:50 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 20:40:51 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:51 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit ccc6e2f9-4891-495a-842e-0e63fed96f26 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:51 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:40:51 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 20:40:51 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:40:51 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:40:51 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:51 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:54 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 2.79s)
+2025-05-02 20:40:54 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 18
+2025-05-02 20:40:54 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:40:54 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit d728814c-969d-4ae3-85af-f57d16872385 by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:40:54 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 20:40:54 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:54 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:40:58 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.49s)
+2025-05-02 20:40:58 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 19
+2025-05-02 20:40:58 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:40:59 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:41:00 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 20:41:00 - collabgpt.app - INFO - app:564 - Processed 4 comment threads for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:06 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:52:08 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:52:08 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:52:08 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:52:08 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:52:08 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:52:08 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:52:11 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:11 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit ef19c2d2-6a70-4fb2-b9fb-aff67b6b3baf by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:11 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:52:11 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:52:18 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 7.27s)
+2025-05-02 20:52:18 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 20
+2025-05-02 20:52:18 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:52:20 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:20 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 84ead240-5cd6-4dee-bbb3-99a47b177e76 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:20 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 20:52:20 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:52:28 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 7.21s)
+2025-05-02 20:52:28 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 21
+2025-05-02 20:52:28 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 20:52:29 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:29 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 94babf5f-6de8-4113-93d7-a6502f59ae61 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:29 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:52:29 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 20:52:29 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:52:29 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:52:29 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:29 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:36 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 6.99s)
+2025-05-02 20:52:36 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 22
+2025-05-02 20:52:36 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:52:36 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 7a5269b2-f1e6-415d-99a4-42b3aff2dac7 by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:52:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 20:52:36 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:36 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:42 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.35s)
+2025-05-02 20:52:42 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 23
+2025-05-02 20:52:42 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:52:43 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:52:43 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 20:52:43 - collabgpt.app - INFO - app:564 - Processed 4 comment threads for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:23 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 20:53:24 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 20:53:24 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 20:53:24 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 20:53:24 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 20:53:24 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 20:53:24 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 20:53:27 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:27 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit b0698cc4-096e-4447-9a9f-a6c3b6aaf3d3 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:27 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:53:27 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:53:30 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.45s)
+2025-05-02 20:53:30 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 24
+2025-05-02 20:53:30 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:53:33 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:33 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 66b53cff-fca4-4ad1-86dc-627474895c1e by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:33 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 20:53:33 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 20:53:37 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.64s)
+2025-05-02 20:53:37 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 25
+2025-05-02 20:53:37 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 20:53:39 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:39 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit b6b7f2d8-80ba-40f7-b384-0b260d5f8406 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:39 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:53:39 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 20:53:39 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:53:39 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 20:53:39 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:39 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:46 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 6.83s)
+2025-05-02 20:53:46 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 26
+2025-05-02 20:53:46 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:53:46 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit e0b406d5-aa0a-4aa8-b8a4-be7a149cf5bf by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 20:53:46 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 20:53:46 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:46 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:52 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.90s)
+2025-05-02 20:53:52 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 27
+2025-05-02 20:53:52 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 20:53:53 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 20:53:53 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 20:53:53 - collabgpt.app - INFO - app:564 - Processed 4 comment threads for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:07 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 21:11:09 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 21:11:09 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 21:11:09 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 21:11:09 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 21:11:09 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 21:11:09 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 21:11:12 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:12 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 8e52c87d-ad29-47b0-81e7-27a149ebdf29 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:12 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:11:12 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:11:20 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 8.38s)
+2025-05-02 21:11:20 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 28
+2025-05-02 21:11:20 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:11:24 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:24 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 09f30bfc-685d-440a-aecf-a6d0a2d439e6 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:24 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 21:11:24 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:11:30 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 6.08s)
+2025-05-02 21:11:30 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 29
+2025-05-02 21:11:30 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 21:11:31 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:31 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 42713bc0-6ce4-49fb-8dc0-8e491201c042 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:31 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:11:31 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 21:11:31 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:11:31 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:11:31 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:31 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:36 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.45s)
+2025-05-02 21:11:36 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 30
+2025-05-02 21:11:36 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:11:36 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 58303a8f-f487-4b94-97dc-11faffd3d77a by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:11:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 21:11:36 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:36 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:39 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.63s)
+2025-05-02 21:11:39 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 31
+2025-05-02 21:11:39 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:11:40 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:11:41 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 21:11:41 - collabgpt.app - INFO - app:564 - Processed 4 comment threads for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:27 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 21:20:28 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 21:20:28 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 21:20:28 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 21:20:28 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 21:20:28 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 21:20:28 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 21:20:31 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:31 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit d43c1111-672a-455a-91b6-00a44ecb528c by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:31 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:20:31 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:20:36 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.04s)
+2025-05-02 21:20:36 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 32
+2025-05-02 21:20:36 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:20:39 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:39 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 861da4e4-e74e-40da-87e0-e24755021d9b by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:39 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 21:20:39 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:20:43 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.39s)
+2025-05-02 21:20:43 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 33
+2025-05-02 21:20:43 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 21:20:45 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:45 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 95af0682-77f8-4013-b922-c2d33c57454e by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:45 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:20:45 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 21:20:45 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:20:45 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:20:45 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:45 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:51 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.51s)
+2025-05-02 21:20:51 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 34
+2025-05-02 21:20:51 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:20:51 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 2281450d-7fb1-4946-84e4-98a5dd797a8d by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:20:51 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 21:20:51 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:51 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:53 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 2.62s)
+2025-05-02 21:20:53 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 35
+2025-05-02 21:20:53 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:20:54 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:20:55 - collabgpt.app - INFO - app:559 - Document comment event: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, 4 comments
+2025-05-02 21:20:55 - collabgpt.app - INFO - app:564 - Processed 4 comment threads for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:24:41 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 21:24:43 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 21:24:43 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 21:24:43 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 21:24:43 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 21:24:43 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 21:24:43 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 21:24:45 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:24:45 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 1906a9dd-a21a-4619-823d-8db07154c183 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:24:45 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:24:45 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:25:01 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 15.42s)
+2025-05-02 21:25:01 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 36
+2025-05-02 21:25:01 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:25:03 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:03 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 0068365e-bcff-4602-b1c3-9ada49cebdcd by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:03 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 21:25:03 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:25:22 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 18.11s)
+2025-05-02 21:25:22 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 37
+2025-05-02 21:25:22 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 21:25:23 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:23 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit a81c96b7-de33-468c-b3bf-ca906812ecc1 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:23 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:25:23 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 21:25:23 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:25:23 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:25:23 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:23 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:30 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 6.81s)
+2025-05-02 21:25:30 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 38
+2025-05-02 21:25:30 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:25:30 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit becbfbfc-eef2-4c67-b75b-621bebbc6a6e by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:25:30 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 21:25:30 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:30 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:25:36 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.57s)
+2025-05-02 21:25:36 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 39
+2025-05-02 21:25:36 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:25:37 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:08 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 21:31:10 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 21:31:10 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 21:31:10 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 21:31:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 21:31:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 21:31:10 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 21:31:13 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:13 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit aed6121e-f4c9-4d9f-bdc8-db546cc6038c by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:13 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:31:13 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:31:16 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.24s)
+2025-05-02 21:31:16 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 40
+2025-05-02 21:31:16 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:31:19 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:19 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 4ef8cf11-074a-4f6f-9324-a4c411426180 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:19 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 21:31:19 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:31:24 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.40s)
+2025-05-02 21:31:24 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 41
+2025-05-02 21:31:24 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 21:31:25 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:25 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 09fdd2b5-a9ed-47ee-9056-aa835c8d1ec1 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:25 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:31:25 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 21:31:25 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:31:25 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:31:25 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:25 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:34 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 8.37s)
+2025-05-02 21:31:34 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 42
+2025-05-02 21:31:34 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:31:34 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 91b32a2a-2663-471f-a3b0-0423df8d802b by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:31:34 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 21:31:34 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:34 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:31:37 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 3.53s)
+2025-05-02 21:31:37 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 43
+2025-05-02 21:31:37 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:31:39 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:15 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 21:37:16 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 21:37:16 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 21:37:16 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 21:37:16 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 21:37:16 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 21:37:16 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 21:37:18 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:18 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit a21f4cfa-dd4e-4413-bb8e-783a6d84783c by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:18 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:37:18 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:37:24 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.40s)
+2025-05-02 21:37:24 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 44
+2025-05-02 21:37:24 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:37:27 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:27 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 83d2a013-1508-4f6e-97a6-b1638c424fb2 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:27 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 21:37:27 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:37:34 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 7.67s)
+2025-05-02 21:37:34 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 45
+2025-05-02 21:37:34 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 21:37:36 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:36 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 0dc8c65d-b572-49cc-a5ea-5bccdc5bb8d3 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:36 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:37:36 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 21:37:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:37:36 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:37:36 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:36 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:48 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 12.14s)
+2025-05-02 21:37:48 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 46
+2025-05-02 21:37:48 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:37:48 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 154f0f52-e63e-4443-9035-35021bab13f1 by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:37:48 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 21:37:48 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:48 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:53 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.91s)
+2025-05-02 21:37:53 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 47
+2025-05-02 21:37:53 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:37:54 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:37:56 - collabgpt.app - INFO - app:164 - Stopping CollabGPT application
+2025-05-02 21:37:56 - collabgpt.app - INFO - app:177 - Performance metrics at shutdown: {'change_analysis': {'count': 4, 'avg': 1.1671781539916992, 'min': 0.6577968597412109, 'max': 2.1009445190429688, 'unit': 'ms', 'last': 0.6577968597412109}, 'track_activity': {'count': 14, 'avg': 0.03128392355782645, 'min': 0.015974044799804688, 'max': 0.09274482727050781, 'unit': 'ms', 'last': 0.016927719116210938}, 'process_document_changes': {'count': 4, 'avg': 7538.573503494263, 'min': 4917.634963989258, 'max': 12154.658079147339, 'unit': 'ms', 'last': 4917.634963989258}, 'get_active_users': {'count': 1, 'avg': 0.09393692016601562, 'min': 0.09393692016601562, 'max': 0.09393692016601562, 'unit': 'ms', 'last': 0.09393692016601562}}
+2025-05-02 21:37:56 - collabgpt.app - INFO - app:179 - CollabGPT application stopped
+2025-05-02 21:38:04 - collabgpt.app - INFO - app:164 - Stopping CollabGPT application
+2025-05-02 21:38:04 - collabgpt.app - INFO - app:169 - Stopping webhook server
+2025-05-02 21:38:04 - collabgpt.app - INFO - app:177 - Performance metrics at shutdown: {}
+2025-05-02 21:38:04 - collabgpt.app - INFO - app:179 - CollabGPT application stopped
+2025-05-02 21:45:26 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 21:45:28 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 21:45:28 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 21:45:28 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 21:45:28 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 21:45:28 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 21:45:28 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 21:45:31 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:31 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit c666b64f-8ded-49b2-b8d5-d492b1a12fa8 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:31 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:45:31 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:45:37 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.82s)
+2025-05-02 21:45:37 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 48
+2025-05-02 21:45:37 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:45:40 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:40 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 8606fd67-54bf-432e-86d2-fb548f3de438 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:40 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 21:45:40 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 21:45:46 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 5.56s)
+2025-05-02 21:45:46 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 49
+2025-05-02 21:45:46 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 21:45:47 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:47 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 766672f5-97f6-4196-8c9b-e5466c3d8ff6 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:47 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:45:47 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 21:45:47 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:45:47 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 21:45:47 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:47 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:57 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 9.43s)
+2025-05-02 21:45:57 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 50
+2025-05-02 21:45:57 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:45:57 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 75d4266b-2477-47be-b2b4-03fa3c5614aa by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 21:45:57 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 21:45:57 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:45:57 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:46:01 - collabgpt.llm_interface - INFO - llm_interface:272 - Got successful response from OpenRouter (elapsed: 4.92s)
+2025-05-02 21:46:01 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 51
+2025-05-02 21:46:01 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 21:46:03 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 21:46:04 - collabgpt.app - INFO - app:164 - Stopping CollabGPT application
+2025-05-02 21:46:04 - collabgpt.app - INFO - app:177 - Performance metrics at shutdown: {'change_analysis': {'count': 4, 'avg': 1.2497305870056152, 'min': 0.6372928619384766, 'max': 1.9059181213378906, 'unit': 'ms', 'last': 0.6372928619384766}, 'track_activity': {'count': 14, 'avg': 0.03177779061453683, 'min': 0.016927719116210938, 'max': 0.08511543273925781, 'unit': 'ms', 'last': 0.0171661376953125}, 'process_document_changes': {'count': 4, 'avg': 6442.124009132385, 'min': 4929.458141326904, 'max': 9439.404010772705, 'unit': 'ms', 'last': 4929.458141326904}, 'get_active_users': {'count': 1, 'avg': 0.12493133544921875, 'min': 0.12493133544921875, 'max': 0.12493133544921875, 'unit': 'ms', 'last': 0.12493133544921875}, 'process_comments': {'count': 1, 'avg': 2.373933792114258, 'min': 2.373933792114258, 'max': 2.373933792114258, 'unit': 'ms', 'last': 2.373933792114258}}
+2025-05-02 21:46:04 - collabgpt.app - INFO - app:179 - CollabGPT application stopped
+2025-05-02 22:01:48 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 22:01:49 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 22:01:49 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 22:01:49 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 22:01:49 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 22:01:49 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 22:01:49 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 22:01:57 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:01:57 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 7b226614-071f-46e9-a28d-38771f63b3b8 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:01:57 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 22:01:57 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 22:01:59 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:01:59 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 52
+2025-05-02 22:01:59 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:02:02 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:02:02 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit b30a8073-0387-4fbf-9cd7-f5396c599407 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:02:02 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['New Test Section']
+2025-05-02 22:02:02 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 22:02:03 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:02:03 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 53
+2025-05-02 22:02:03 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 22:02:05 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 53
+2025-05-02 22:02:05 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:02:06 - collabgpt.app - INFO - app:164 - Stopping CollabGPT application
+2025-05-02 22:02:06 - collabgpt.app - INFO - app:177 - Performance metrics at shutdown: {'change_analysis': {'count': 2, 'avg': 1.783132553100586, 'min': 1.1012554168701172, 'max': 2.4650096893310547, 'unit': 'ms', 'last': 1.1012554168701172}, 'track_activity': {'count': 2, 'avg': 0.04947185516357422, 'min': 0.041961669921875, 'max': 0.05698204040527344, 'unit': 'ms', 'last': 0.041961669921875}, 'process_document_changes': {'count': 2, 'avg': 1280.8810472488403, 'min': 1182.873249053955, 'max': 1378.8888454437256, 'unit': 'ms', 'last': 1182.873249053955}, 'document_analysis': {'count': 1, 'avg': 1.112222671508789, 'min': 1.112222671508789, 'max': 1.112222671508789, 'unit': 'ms', 'last': 1.112222671508789}}
+2025-05-02 22:02:06 - collabgpt.app - INFO - app:179 - CollabGPT application stopped
+2025-05-02 22:10:09 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 22:10:10 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 22:10:10 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 22:10:10 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 22:10:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 22:10:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 22:10:10 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 22:10:19 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:10:19 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 1c76eb5c-b833-4b02-b400-049d05c3926f by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:10:19 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 22:10:19 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 22:10:21 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:10:21 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 54
+2025-05-02 22:10:21 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:10:24 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:10:24 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit f476a412-ebf6-4e1b-8eef-9487fbf139a0 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:10:24 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['New Test Section']
+2025-05-02 22:10:24 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 22:10:25 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:10:25 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 55
+2025-05-02 22:10:25 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 22:10:27 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 55
+2025-05-02 22:10:27 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:10:28 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:10:30 - collabgpt.app - INFO - app:164 - Stopping CollabGPT application
+2025-05-02 22:10:30 - collabgpt.app - INFO - app:177 - Performance metrics at shutdown: {'change_analysis': {'count': 2, 'avg': 1.323103904724121, 'min': 0.46324729919433594, 'max': 2.1829605102539062, 'unit': 'ms', 'last': 0.46324729919433594}, 'track_activity': {'count': 2, 'avg': 0.03802776336669922, 'min': 0.0209808349609375, 'max': 0.05507469177246094, 'unit': 'ms', 'last': 0.0209808349609375}, 'process_document_changes': {'count': 2, 'avg': 1346.3284969329834, 'min': 1185.8539581298828, 'max': 1506.803035736084, 'unit': 'ms', 'last': 1185.8539581298828}, 'document_analysis': {'count': 1, 'avg': 3.702878952026367, 'min': 3.702878952026367, 'max': 3.702878952026367, 'unit': 'ms', 'last': 3.702878952026367}}
+2025-05-02 22:10:30 - collabgpt.app - INFO - app:179 - CollabGPT application stopped
+2025-05-02 22:12:08 - collabgpt - INFO - logger:57 - Logging to file: data/collabgpt.log
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:41 - Initializing CollabGPT application
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:71 - Initializing Google Docs API
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:77 - Initializing Document Analyzer
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:85 - Initializing Conflict Detector
+2025-05-02 22:12:10 - collabgpt.conflict_detector - INFO - conflict_detector:82 - Conflict detector initialized with 60s window
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:91 - Initializing User Activity Tracker
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:97 - Initializing Comment Analyzer
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:102 - Initializing RAG System
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:106 - Initializing LLM Interface
+2025-05-02 22:12:10 - collabgpt.llm_interface - INFO - llm_interface:114 - Using API mode with model: deepseek/deepseek-chat-v3-0324:free
+2025-05-02 22:12:10 - collabgpt.llm_interface - INFO - llm_interface:398 - Loaded 4 prompt templates
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:110 - Initializing Webhook Handler
+2025-05-02 22:12:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: change
+2025-05-02 22:12:10 - collabgpt.webhook_handler - INFO - webhook_handler:55 - Registered callback for event type: comment
+2025-05-02 22:12:10 - collabgpt.app - INFO - app:838 - Loaded monitored document: B022110150 - Ulasan Video
+2025-05-02 22:12:12 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:12 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit c50db85f-4066-42a3-9e59-e4ac2ee48fe3 by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:12 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 22:12:12 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 22:12:14 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:12:14 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 56
+2025-05-02 22:12:14 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:12:16 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:16 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit ce44fd6a-1f7f-480b-83cf-7a97348d0dbb by user test_user for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:16 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['IMPORTANT NEW SECTION']
+2025-05-02 22:12:16 - collabgpt.conflict_detector - INFO - conflict_detector:259 - No other recent edits found for conflict detection
+2025-05-02 22:12:17 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:12:17 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 57
+2025-05-02 22:12:17 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 2 chunks
+2025-05-02 22:12:19 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:19 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit 88f02425-67f7-46f1-8fa1-861420d16974 by user user1 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:19 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 22:12:19 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 2 recent edits
+2025-05-02 22:12:19 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 22:12:19 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user1 and test_user edited from the same base content
+2025-05-02 22:12:19 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 2 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:19 - collabgpt.app - WARNING - app:300 - Detected 2 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:20 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:12:20 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 58
+2025-05-02 22:12:20 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:12:20 - collabgpt.app - INFO - app:277 - Analyzing changes for document: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:135 - Recorded edit f2b9ee5d-d76f-4628-9af5-36715b371d84 by user user2 for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:136 - Edit affected sections: ['Video Review']
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:262 - Checking for conflicts against 3 recent edits
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:311 - Found content overlap between edits from user2 and user1
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and test_user edited from the same base content
+2025-05-02 22:12:20 - collabgpt.conflict_detector - INFO - conflict_detector:372 - Possible sequential conflict: user2 and user1 edited from the same base content
+2025-05-02 22:12:20 - collabgpt.conflict_detector - WARNING - conflict_detector:279 - Detected 4 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:20 - collabgpt.app - WARNING - app:300 - Detected 6 conflicts in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:21 - collabgpt.llm_interface - ERROR - llm_interface:283 - Unexpected OpenRouter response format: {'error': {'message': 'Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '50', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1746230400000'}, 'provider_name': None}}, 'user_id': 'user_2t9RaDbp3ygHp3YeGnLzFOO1glc'}
+2025-05-02 22:12:21 - collabgpt.rag_system - INFO - rag_system:339 - Updated chunk section_0 in document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw, now at version 59
+2025-05-02 22:12:21 - collabgpt.rag_system - INFO - rag_system:350 - Processed document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw: created/updated 1 chunks
+2025-05-02 22:12:23 - collabgpt.conflict_detector - INFO - conflict_detector:776 - Cleared 6 conflicts for document 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
+2025-05-02 22:12:24 - collabgpt.app - INFO - app:164 - Stopping CollabGPT application
+2025-05-02 22:12:24 - collabgpt.app - INFO - app:177 - Performance metrics at shutdown: {'change_analysis': {'count': 4, 'avg': 0.816643238067627, 'min': 0.6840229034423828, 'max': 1.0151863098144531, 'unit': 'ms', 'last': 0.6840229034423828}, 'track_activity': {'count': 14, 'avg': 0.04254068647112165, 'min': 0.01811981201171875, 'max': 0.09894371032714844, 'unit': 'ms', 'last': 0.030994415283203125}, 'process_document_changes': {'count': 4, 'avg': 1267.6612734794617, 'min': 1110.2910041809082, 'max': 1543.5669422149658, 'unit': 'ms', 'last': 1110.2910041809082}, 'get_active_users': {'count': 1, 'avg': 0.18095970153808594, 'min': 0.18095970153808594, 'max': 0.18095970153808594, 'unit': 'ms', 'last': 0.18095970153808594}, 'process_comments': {'count': 1, 'avg': 2.767801284790039, 'min': 2.767801284790039, 'max': 2.767801284790039, 'unit': 'ms', 'last': 2.767801284790039}}
+2025-05-02 22:12:24 - collabgpt.app - INFO - app:179 - CollabGPT application stopped

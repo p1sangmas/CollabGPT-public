@@ -25,7 +25,9 @@ class DocumentChunk:
                  chunk_id: str,
                  text: str,
                  metadata: Dict[str, Any] = None,
-                 embedding: List[float] = None):
+                 embedding: List[float] = None,
+                 version: int = 1,   # Added version tracking
+                 previous_versions: List[Dict[str, Any]] = None):  # Added version history
         """
         Initialize a document chunk.
         
@@ -35,6 +37,8 @@ class DocumentChunk:
             text: The text content of the chunk
             metadata: Additional information about the chunk
             embedding: Vector embedding of the chunk (if available)
+            version: Version number of this chunk
+            previous_versions: List of previous versions of this chunk's content
         """
         self.doc_id = doc_id
         self.chunk_id = chunk_id
@@ -42,6 +46,24 @@ class DocumentChunk:
         self.metadata = metadata or {}
         self.embedding = embedding
         self.last_updated = datetime.now()
+        self.version = version
+        self.previous_versions = previous_versions or []
+
+    def add_version(self, previous_text: str, metadata: Dict[str, Any] = None) -> None:
+        """
+        Add a previous version of this chunk to the history.
+        
+        Args:
+            previous_text: The text content of the previous version
+            metadata: Additional metadata for the previous version
+        """
+        version_data = {
+            "text": previous_text,
+            "timestamp": datetime.now().isoformat(),
+            "metadata": metadata or {}
+        }
+        self.previous_versions.append(version_data)
+        self.version += 1
 
 
 class SimpleVectorStore:
@@ -195,6 +217,8 @@ class SimpleVectorStore:
             "text": chunk.text,
             "metadata": chunk.metadata,
             "last_updated": chunk.last_updated.isoformat(),
+            "version": chunk.version,  # Persist version
+            "previous_versions": chunk.previous_versions  # Persist version history
         }
         
         # Don't store empty embeddings
@@ -223,7 +247,9 @@ class SimpleVectorStore:
                         chunk_id=data["chunk_id"],
                         text=data["text"],
                         metadata=data.get("metadata", {}),
-                        embedding=data.get("embedding")
+                        embedding=data.get("embedding"),
+                        version=data.get("version", 1),  # Load version
+                        previous_versions=data.get("previous_versions", [])  # Load version history
                     )
                     
                     # Parse the last_updated timestamp
@@ -275,21 +301,58 @@ class RAGSystem:
         Returns:
             List of chunk IDs created
         """
-        # First, remove any existing chunks for this document
+        # Save existing chunks before removing them to preserve history
+        existing_chunks = self.vector_store.get_chunks_by_doc_id(doc_id)
+        
+        # Extract content from existing chunks by section/chunk ID for version tracking
+        existing_content_by_id = {}
+        for chunk in existing_chunks:
+            existing_content_by_id[chunk.chunk_id] = {
+                "text": chunk.text,
+                "metadata": chunk.metadata,
+                "version": chunk.version,
+                "previous_versions": chunk.previous_versions
+            }
+        
+        # Split the new document into chunks
+        new_chunks = self._chunk_document(doc_id, content, metadata)
+        
+        # For each new chunk, check if it exists in previous version and add history if so
+        for chunk in new_chunks:
+            if chunk.chunk_id in existing_content_by_id:
+                existing_data = existing_content_by_id[chunk.chunk_id]
+                
+                # Only add version history if content has changed
+                if chunk.text != existing_data["text"]:
+                    # Add previous content as a version
+                    chunk.previous_versions = existing_data["previous_versions"]
+                    chunk.add_version(
+                        existing_data["text"], 
+                        existing_data["metadata"]
+                    )
+                    chunk.version = existing_data["version"] + 1
+                else:
+                    # Content hasn't changed, keep existing versions
+                    chunk.version = existing_data["version"]
+                    chunk.previous_versions = existing_data["previous_versions"]
+                    
+                self.logger.info(
+                    f"Updated chunk {chunk.chunk_id} in document {doc_id}, " +
+                    f"now at version {chunk.version}"
+                )
+        
+        # Now remove old chunks
         self.vector_store.delete_chunks_by_doc_id(doc_id)
         
-        # Split the document into chunks
-        chunks = self._chunk_document(doc_id, content, metadata)
+        # Add the new/updated chunks to the vector store
+        chunk_ids = self.vector_store.add_chunks(new_chunks)
         
-        # Add chunks to the vector store
-        chunk_ids = self.vector_store.add_chunks(chunks)
-        
-        self.logger.info(f"Processed document {doc_id}: created {len(chunks)} chunks")
+        self.logger.info(f"Processed document {doc_id}: created/updated {len(new_chunks)} chunks")
         
         return chunk_ids
     
     def get_relevant_context(self, query: str, doc_id: str = None, 
-                             max_chunks: int = 3) -> str:
+                             max_chunks: int = 3, include_history: bool = True) -> str:
         """
         Get relevant document context based on a query.
         
@@ -297,6 +360,7 @@ class RAGSystem:
             query: The query to find relevant context for
             doc_id: Optional document ID to limit context to a specific document
             max_chunks: Maximum number of chunks to include
+            include_history: Whether to include historical versions in context
             
         Returns:
             Combined text from relevant chunks
@@ -321,10 +385,122 @@ class RAGSystem:
             if 'section' in chunk.metadata:
                 header += f" | Section: {chunk.metadata['section']}"
             
+            # Include version information if available
+            if chunk.version > 1:
+                header += f" | Version: {chunk.version}"
+                
             # Add the chunk text with its header
             context_parts.append(f"{header}\n{chunk.text}")
             
+            # Add historical context if requested and available
+            if include_history and chunk.previous_versions:
+                history_parts = self._format_chunk_history(chunk, max_versions=2)
+                if history_parts:
+                    context_parts.append(history_parts)
+            
         return "\n\n---\n\n".join(context_parts)
+    
+    def _format_chunk_history(self, chunk: DocumentChunk, max_versions: int = 2) -> str:
+        """
+        Format the history of a chunk for context inclusion.
+        
+        Args:
+            chunk: The document chunk
+            max_versions: Maximum number of previous versions to include
+            
+        Returns:
+            Formatted history text
+        """
+        if not chunk.previous_versions:
+            return ""
+            
+        # Only include the most recent versions up to max_versions
+        recent_versions = chunk.previous_versions[-max_versions:]
+        
+        history_parts = [f"Historical changes for section '{chunk.metadata.get('section', 'Unknown Section')}':"]
+        
+        for i, version in enumerate(recent_versions):
+            version_number = chunk.version - len(recent_versions) + i
+            timestamp = version.get("timestamp", "Unknown time")
+            
+            # Format timestamp for readability if it's a string
+            if isinstance(timestamp, str):
+                try:
+                    dt = datetime.fromisoformat(timestamp)
+                    timestamp = dt.strftime("%Y-%m-%d %H:%M")
+                except (ValueError, TypeError):
+                    pass
+                    
+            history_parts.append(f"Version {version_number} ({timestamp}):")
+            
+            # Include a snippet of the previous version
+            text = version.get("text", "")
+            if len(text) > 200:
+                text = text[:200] + "..."
+            history_parts.append(text)
+            
+        return "\n".join(history_parts)
+    
+    def get_document_history(self, doc_id: str, section_title: str = None) -> Dict[str, Any]:
+        """
+        Get the change history for a document or specific section.
+        
+        Args:
+            doc_id: The document identifier
+            section_title: Optional section title to filter changes
+            
+        Returns:
+            Dictionary with history information
+        """
+        chunks = self.vector_store.get_chunks_by_doc_id(doc_id)
+        
+        if not chunks:
+            return {"error": f"No document found with ID: {doc_id}"}
+            
+        history = {
+            "document_id": doc_id,
+            "sections": []
+        }
+        
+        for chunk in chunks:
+            # Skip if we're looking for a specific section and this isn't it
+            if section_title and chunk.metadata.get('section') != section_title:
+                continue
+                
+            # Only include chunks with history
+            if chunk.version > 1 and chunk.previous_versions:
+                section_history = {
+                    "section": chunk.metadata.get('section', 'Unknown Section'),
+                    "current_version": chunk.version,
+                    "current_content": chunk.text[:200] + "..." if len(chunk.text) > 200 else chunk.text,
+                    "changes": []
+                }
+                
+                # Add information about each previous version
+                for i, version in enumerate(chunk.previous_versions):
+                    version_number = i + 1
+                    timestamp = version.get("timestamp", "Unknown time")
+                    
+                    # Format timestamp for readability if it's a string
+                    if isinstance(timestamp, str):
+                        try:
+                            dt = datetime.fromisoformat(timestamp)
+                            timestamp = dt.strftime("%Y-%m-%d %H:%M")
+                        except (ValueError, TypeError):
+                            pass
+                    
+                    version_info = {
+                        "version": version_number,
+                        "timestamp": timestamp,
+                        "content_snippet": version.get("text", "")[:200] + "..." 
+                                          if len(version.get("text", "")) > 200 
+                                          else version.get("text", "")
+                    }
+                    section_history["changes"].append(version_info)
+                
+                history["sections"].append(section_history)
+        
+        return history
     
     def _chunk_document(self, doc_id: str, content: str, 
                         metadata: Dict[str, Any] = None) -> List[DocumentChunk]:

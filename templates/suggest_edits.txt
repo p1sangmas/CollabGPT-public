@@ -4,4 +4,13 @@ Document section: {section_title}
 Content:
 {section_content}
 
+Document History Context:
+{section_history}
+
+Based on the document's current content and its history, please provide thoughtful suggestions for improvements. Focus on:
+1. Enhancing clarity and readability
+2. Filling content gaps or addressing inconsistencies
+3. Maintaining consistency with previous versions while improving quality
+4. Resolving any issues that may have been repeatedly edited
+
 Suggestions:

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 import json
+from datetime import datetime
 
 # Base directories
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -49,6 +50,17 @@ DOCUMENT = {
     'cache_enabled': os.environ.get('CACHE_ENABLED', 'true').lower() == 'true',
 }
 
+# Collaboration features settings (Phase 2)
+COLLABORATION = {
+    'conflict_window_seconds': int(os.environ.get('CONFLICT_WINDOW_SECONDS', 60)),
+    'activity_retention_days': int(os.environ.get('ACTIVITY_RETENTION_DAYS', 14)),
+    'similarity_threshold': float(os.environ.get('SIMILARITY_THRESHOLD', 0.7)),
+    'notify_on_conflicts': os.environ.get('NOTIFY_ON_CONFLICTS', 'true').lower() == 'true',
+    'comment_categorization': os.environ.get('COMMENT_CATEGORIZATION', 'true').lower() == 'true',
+    'latency_threshold_ms': int(os.environ.get('LATENCY_THRESHOLD_MS', 500)),
+    'critical_change_keywords': os.environ.get('CRITICAL_CHANGE_KEYWORDS', 'urgent,critical,deadline,important').split(','),
+}
+
 # AI processing settings
 AI = {
     'rag_enabled': os.environ.get('RAG_ENABLED', 'true').lower() == 'true',
@@ -65,6 +77,7 @@ LOGGING = {
     'file_path': os.environ.get('LOG_FILE') or str(DATA_DIR / 'collabgpt.log'),
     'max_file_size_mb': int(os.environ.get('LOG_MAX_FILE_SIZE_MB', 10)),
     'backup_count': int(os.environ.get('LOG_BACKUP_COUNT', 5)),
+    'performance_logging': os.environ.get('PERFORMANCE_LOGGING', 'true').lower() == 'true',
 }
 
 # Feature flags
@@ -73,6 +86,9 @@ FEATURES = {
     'comment_analysis': os.environ.get('FEATURE_COMMENT_ANALYSIS', 'true').lower() == 'true',
     'edit_suggestions': os.environ.get('FEATURE_EDIT_SUGGESTIONS', 'false').lower() == 'true',
     'conflict_detection': os.environ.get('FEATURE_CONFLICT_DETECTION', 'true').lower() == 'true',
+    'activity_tracking': os.environ.get('FEATURE_ACTIVITY_TRACKING', 'true').lower() == 'true',
+    'intelligent_summaries': os.environ.get('FEATURE_INTELLIGENT_SUMMARIES', 'true').lower() == 'true',
+    'performance_monitoring': os.environ.get('FEATURE_PERFORMANCE_MONITORING', 'true').lower() == 'true',
 }
 
 # Monitored documents
@@ -111,7 +127,6 @@ def save_monitored_document(document_id: str, name: str, webhook_enabled: bool =
             break
     else:
         # Document not found, add it
-        from datetime import datetime
         docs.append({
             'id': document_id,
             'name': name,

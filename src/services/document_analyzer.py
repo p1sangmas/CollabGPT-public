@@ -11,6 +11,10 @@ import difflib
 from datetime import datetime
 import nltk
 import logging
+from enum import Enum
+
+from ..utils.performance import measure_latency, get_performance_monitor
+from ..utils import logger
 
 # Download all required NLTK resources upfront
 def ensure_nltk_resources():
@@ -57,6 +61,27 @@ def simple_word_tokenize(text):
     return [w.strip() for w in words if w.strip()]
 
 
+class ChangeImportance(Enum):
+    """Enum for classifying change importance levels."""
+    CRITICAL = 5
+    HIGH = 4
+    MEDIUM = 3
+    LOW = 2
+    TRIVIAL = 1
+    
+    @classmethod
+    def get_description(cls, level):
+        """Get a human-readable description of the importance level."""
+        descriptions = {
+            cls.CRITICAL: "Critical changes that significantly alter document meaning or structure",
+            cls.HIGH: "Important changes to key sections or major content updates",
+            cls.MEDIUM: "Moderate changes affecting document flow or clarity",
+            cls.LOW: "Minor edits with limited impact on overall document",
+            cls.TRIVIAL: "Small formatting changes or typo corrections"
+        }
+        return descriptions.get(level, "Unknown importance level")
+
+
 class DocumentAnalyzer:
     """
     Analyzes document content and changes to provide insights and summaries.
@@ -76,6 +101,24 @@ class DocumentAnalyzer:
             print(f"Warning: Stopwords not available for language '{language}'. Using empty set.")
             self.stop_words = set()
         self.document_cache = {}
+        self.logger = logger.get_logger("document_analyzer")
+        self.performance_monitor = get_performance_monitor()
+        
+        # Keywords that might indicate important changes when found in added/removed content
+        self.importance_keywords = {
+            'critical': [
+                'urgent', 'critical', 'deadline', 'immediately', 'emergency', 'crucial',
+                'vital', 'required', 'must', 'critical', 'warning', 'danger', 'alert'
+            ],
+            'high': [
+                'important', 'significant', 'major', 'key', 'essential', 'primary', 
+                'fundamental', 'core', 'central', 'priority', 'necessary'
+            ],
+            'medium': [
+                'update', 'modify', 'change', 'revise', 'enhance', 'improve', 'adjust',
+                'develop', 'expand', 'extend', 'clarify', 'detail'
+            ]
+        }
     
     def analyze_document(self, document_id: str, content: str) -> Dict[str, Any]:
         """
@@ -88,28 +131,29 @@ class DocumentAnalyzer:
         Returns:
             Dictionary containing analysis results
         """
-        # Store content in cache
-        self.document_cache[document_id] = {
-            'content': content,
-            'timestamp': datetime.now(),
-            'analysis': {}
-        }
-        
-        # Perform analysis
-        analysis = {
-            'summary': self.summarize_text(content),
-            'word_count': len(simple_word_tokenize(content)),
-            'sentence_count': len(simple_sent_tokenize(content)),
-            'key_phrases': self._extract_key_phrases(content),
-            'sections': self._identify_sections(content),
-            'language_metrics': self._analyze_language(content),
-            'entities': self._extract_entities(content)
-        }
-        
-        # Update cache with analysis
-        self.document_cache[document_id]['analysis'] = analysis
-        
-        return analysis
+        with measure_latency("document_analysis", self.performance_monitor):
+            # Store content in cache
+            self.document_cache[document_id] = {
+                'content': content,
+                'timestamp': datetime.now(),
+                'analysis': {}
+            }
+            
+            # Perform analysis
+            analysis = {
+                'summary': self.summarize_text(content),
+                'word_count': len(simple_word_tokenize(content)),
+                'sentence_count': len(simple_sent_tokenize(content)),
+                'key_phrases': self._extract_key_phrases(content),
+                'sections': self._identify_sections(content),
+                'language_metrics': self._analyze_language(content),
+                'entities': self._extract_entities(content)
+            }
+            
+            # Update cache with analysis
+            self.document_cache[document_id]['analysis'] = analysis
+            
+            return analysis
     
     def analyze_changes(self, document_id: str, previous_content: str, current_content: str) -> Dict[str, Any]:
         """
@@ -123,28 +167,43 @@ class DocumentAnalyzer:
         Returns:
             Dictionary containing change analysis
         """
-        # Get diff between versions
-        diff = self._get_diff(previous_content, current_content)
-        
-        # Extract additions and deletions
-        additions = ''.join([chunk for tag, chunk in diff if tag == 1])
-        deletions = ''.join([chunk for tag, chunk in diff if tag == -1])
-        
-        # Analyze the changes
-        change_analysis = {
-            'document_id': document_id,
-            'timestamp': datetime.now(),
-            'changes': {
-                'added_content': additions,
-                'deleted_content': deletions,
-                'added_word_count': len(simple_word_tokenize(additions)) if additions else 0,
-                'deleted_word_count': len(simple_word_tokenize(deletions)) if deletions else 0,
-                'changed_sections': self._identify_changed_sections(previous_content, current_content),
-                'change_summary': self.summarize_changes(previous_content, current_content)
+        with measure_latency("change_analysis", self.performance_monitor):
+            # Get diff between versions
+            diff = self._get_diff(previous_content, current_content)
+            
+            # Extract additions and deletions
+            additions = ''.join([chunk for tag, chunk in diff if tag == 1])
+            deletions = ''.join([chunk for tag, chunk in diff if tag == -1])
+            
+            # Identify changed sections
+            changed_sections = self._identify_changed_sections(previous_content, current_content)
+            
+            # Categorize the importance of changes
+            importance_level, importance_reasons = self._categorize_change_importance(
+                additions, deletions, changed_sections
+            )
+            
+            # Analyze the changes
+            change_analysis = {
+                'document_id': document_id,
+                'timestamp': datetime.now(),
+                'changes': {
+                    'added_content': additions,
+                    'deleted_content': deletions,
+                    'added_word_count': len(simple_word_tokenize(additions)) if additions else 0,
+                    'deleted_word_count': len(simple_word_tokenize(deletions)) if deletions else 0,
+                    'changed_sections': changed_sections,
+                    'change_summary': self.summarize_changes(previous_content, current_content),
+                    'importance': {
+                        'level': importance_level.name,
+                        'level_value': importance_level.value,
+                        'reasons': importance_reasons,
+                        'description': ChangeImportance.get_description(importance_level)
+                    }
+                }
             }
-        }
-        
-        return change_analysis
+            
+            return change_analysis
     
     def summarize_text(self, text: str, max_sentences: int = 3) -> str:
         """
@@ -211,37 +270,55 @@ class DocumentAnalyzer:
         elif not previous_content and not current_content:
             return "No changes detected (document is empty)."
         
-        # Get diff and categorize changes
-        diff = self._get_diff(previous_content, current_content)
+        # Use the new categorized change analysis
+        categories = self.categorize_changes_by_type(previous_content, current_content)
         
-        additions = []
-        deletions = []
-        
-        for tag, chunk in diff:
-            chunk = chunk.strip()
-            if tag == 1 and chunk:  # Added content
-                additions.append(chunk)
-            elif tag == -1 and chunk:  # Removed content
-                deletions.append(chunk)
-        
-        # Build summary
+        # Build a more intelligent summary using the categories
         summary_parts = []
         
-        if additions:
-            added_text = ' '.join(additions)
+        # Major revisions take precedence
+        if categories['major_revisions']:
+            count = len(categories['major_revisions'])
+            sample = self.summarize_text(categories['major_revisions'][0], 1) if categories['major_revisions'] else ""
+            summary_parts.append(f"Major revision{'s' if count > 1 else ''} with significant content changes" + 
+                               (f", including: '{sample}...'" if sample else "."))
+        
+        # Structural changes are important
+        if categories['structural_changes']:
+            summary_parts.append(f"Document structure was modified: " + 
+                               f"{'; '.join(categories['structural_changes'][:2])}" + 
+                               (f" and {len(categories['structural_changes'])-2} more changes" if len(categories['structural_changes']) > 2 else ""))
+        
+        # Additions and deletions
+        if categories['content_additions'] and not categories['major_revisions']:
+            added_text = ' '.join(categories['content_additions'])
             added_words = len(simple_word_tokenize(added_text))
             if added_words > 50:
-                summary_parts.append(f"Added {added_words} words, including: '{self.summarize_text(added_text, 1)}'")
+                summary = self.summarize_text(added_text, 1)
+                summary_parts.append(f"Added {added_words} words of new content" + (f", including: '{summary}'" if summary else "."))
             else:
                 summary_parts.append(f"Added: '{added_text[:100]}{'...' if len(added_text) > 100 else ''}'")
         
-        if deletions:
-            deleted_text = ' '.join(deletions)
+        if categories['content_deletions'] and not categories['major_revisions']:
+            deleted_text = ' '.join(categories['content_deletions'])
             deleted_words = len(simple_word_tokenize(deleted_text))
             if deleted_words > 50:
-                summary_parts.append(f"Removed {deleted_words} words, including: '{self.summarize_text(deleted_text, 1)}'")
+                summary = self.summarize_text(deleted_text, 1)
+                summary_parts.append(f"Removed {deleted_words} words of content" + (f", including: '{summary}'" if summary else "."))
             else:
                 summary_parts.append(f"Removed: '{deleted_text[:100]}{'...' if len(deleted_text) > 100 else ''}'")
+        
+        # Corrections
+        if categories['corrections']:
+            if len(categories['corrections']) == 1:
+                correction = categories['corrections'][0]
+                summary_parts.append(f"Made a correction: '{correction['before'][:20]}...' to '{correction['after'][:20]}...'")
+            else:
+                summary_parts.append(f"Made {len(categories['corrections'])} text corrections throughout the document.")
+        
+        # Formatting changes
+        if categories['formatting_changes'] and not summary_parts:
+            summary_parts.append(f"Made {len(categories['formatting_changes'])} formatting or style changes.")
         
         if not summary_parts:
             return "Minor changes made with no significant content additions or removals."
@@ -515,3 +592,183 @@ class DocumentAnalyzer:
             entities[entity_type] = list(set(entities[entity_type]))
         
         return entities
+    
+    def _categorize_change_importance(self, additions: str, deletions: str, 
+                                     changed_sections: List[Dict[str, Any]]) -> Tuple[ChangeImportance, List[str]]:
+        """
+        Categorize the importance of document changes.
+        
+        Args:
+            additions: Text that was added
+            deletions: Text that was removed
+            changed_sections: List of changed sections
+            
+        Returns:
+            Tuple of (importance_level, reasons_list)
+        """
+        reasons = []
+        score = 0
+        
+        # Calculate the volume of changes
+        added_words = len(simple_word_tokenize(additions)) if additions else 0
+        deleted_words = len(simple_word_tokenize(deletions)) if deletions else 0
+        total_changed_words = added_words + deleted_words
+        
+        # Check sections affected
+        section_changes = {section['change_type']: 0 for section in changed_sections}
+        for section in changed_sections:
+            section_changes[section['change_type']] += 1
+            
+            # Check if important sections were modified
+            if 'title' in section:
+                lower_title = section['title'].lower()
+                if any(kw in lower_title for kw in ['introduction', 'conclusion', 'summary', 'abstract', 'results']):
+                    score += 2
+                    reasons.append(f"Changes to important '{section['title']}' section")
+        
+        # Addition of new sections is significant
+        if section_changes.get('added', 0) > 0:
+            score += 2 * section_changes['added']
+            reasons.append(f"Added {section_changes['added']} new section(s)")
+            
+        # Removal of sections is very significant
+        if section_changes.get('removed', 0) > 0:
+            score += 3 * section_changes['removed']
+            reasons.append(f"Removed {section_changes['removed']} section(s)")
+        
+        # Check for important keywords in additions
+        for importance, keywords in self.importance_keywords.items():
+            for keyword in keywords:
+                if f" {keyword} " in f" {additions.lower()} ":
+                    if importance == 'critical':
+                        score += 5
+                        reasons.append(f"Critical keyword '{keyword}' in additions")
+                    elif importance == 'high':
+                        score += 3
+                        reasons.append(f"Important keyword '{keyword}' in additions")
+                    elif importance == 'medium':
+                        score += 1
+                        
+        # Check for important keywords in deletions (more significant)
+        for importance, keywords in self.importance_keywords.items():
+            for keyword in keywords:
+                if f" {keyword} " in f" {deletions.lower()} ":
+                    if importance == 'critical':
+                        score += 6
+                        reasons.append(f"Critical keyword '{keyword}' in deletions")
+                    elif importance == 'high':
+                        score += 4
+                        reasons.append(f"Important keyword '{keyword}' in deletions")
+                    elif importance == 'medium':
+                        score += 2
+                        
+        # Account for volume of changes
+        if total_changed_words > 500:
+            score += 5
+            reasons.append(f"Major changes with {total_changed_words} words modified")
+        elif total_changed_words > 200:
+            score += 3
+            reasons.append(f"Significant changes with {total_changed_words} words modified")
+        elif total_changed_words > 50:
+            score += 1
+            reasons.append(f"Moderate changes with {total_changed_words} words modified")
+            
+        # Determine final importance level based on score
+        if score >= 10:
+            importance = ChangeImportance.CRITICAL
+        elif score >= 7:
+            importance = ChangeImportance.HIGH
+        elif score >= 4:
+            importance = ChangeImportance.MEDIUM
+        elif score >= 2:
+            importance = ChangeImportance.LOW
+        else:
+            importance = ChangeImportance.TRIVIAL
+            if not reasons:
+                reasons.append("Minor textual changes with limited impact")
+                
+        return importance, reasons
+    
+    def categorize_changes_by_type(self, previous_content: str, current_content: str) -> Dict[str, Any]:
+        """
+        Categorize changes by type to enable more intelligent summaries.
+        
+        Args:
+            previous_content: The previous version of the document
+            current_content: The current version of the document
+            
+        Returns:
+            Dictionary of categorized changes
+        """
+        categories = {
+            'content_additions': [],
+            'content_deletions': [],
+            'formatting_changes': [],
+            'structural_changes': [],
+            'corrections': [],
+            'major_revisions': []
+        }
+        
+        # Get diff between versions
+        diff = self._get_diff(previous_content, current_content)
+        
+        # Extract additions and deletions
+        additions = [(tag, chunk) for tag, chunk in diff if tag == 1]
+        deletions = [(tag, chunk) for tag, chunk in diff if tag == -1]
+        
+        # Check for simple corrections
+        for i, (_, deletion) in enumerate(deletions):
+            for j, (_, addition) in enumerate(additions):
+                # If they're similar, it might be a correction
+                if len(deletion) > 0 and len(addition) > 0:
+                    similarity = difflib.SequenceMatcher(None, deletion, addition).ratio()
+                    if similarity > 0.7:  # High similarity indicates correction rather than new content
+                        categories['corrections'].append({
+                            'before': deletion,
+                            'after': addition,
+                            'similarity': similarity
+                        })
+                        # Mark as processed so they're not counted as pure additions/deletions
+                        deletions[i] = (-1, '')
+                        additions[j] = (1, '')
+                        
+        # Process remaining additions
+        for _, content in additions:
+            if content.strip():
+                # Check if it's formatting or structural
+                if re.search(r'[*_#]{2,}|^#{1,6}\s+', content):
+                    categories['formatting_changes'].append(content)
+                elif len(simple_word_tokenize(content)) > 50:
+                    categories['major_revisions'].append(content)
+                else:
+                    categories['content_additions'].append(content)
+        
+        # Process remaining deletions
+        for _, content in deletions:
+            if content.strip():
+                if re.search(r'[*_#]{2,}|^#{1,6}\s+', content):
+                    categories['formatting_changes'].append(content)
+                elif len(simple_word_tokenize(content)) > 50:
+                    categories['major_revisions'].append(content)
+                else:
+                    categories['content_deletions'].append(content)
+        
+        # Check for structural changes
+        prev_sections = self._identify_sections(previous_content)
+        curr_sections = self._identify_sections(current_content)
+        
+        if len(prev_sections) != len(curr_sections):
+            categories['structural_changes'].append(f"Document structure changed from {len(prev_sections)} to {len(curr_sections)} sections")
+        
+        # Compare section order and detect rearrangements
+        prev_titles = [s['title'] for s in prev_sections]
+        curr_titles = [s['title'] for s in curr_sections]
+        
+        common_titles = set(prev_titles) & set(curr_titles)
+        for title in common_titles:
+            prev_idx = prev_titles.index(title)
+            curr_idx = curr_titles.index(title)
+            if prev_idx != curr_idx:
+                categories['structural_changes'].append(f"Section '{title}' moved from position {prev_idx} to {curr_idx}")
+        
+        return categories
