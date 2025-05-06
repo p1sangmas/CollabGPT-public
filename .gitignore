@@ -1,9 +1,29 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Credentials
+credentials/*
+!credentials/.gitkeep
+token.json
+
+# Data files
+data/*.log
+data/*.json
+data/*.txt
+data/rag_data/*.json
+data/rag_data/*.txt
+!data/.gitkeep
+!data/rag_data/.gitkeep
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -20,31 +40,22 @@ wheels/
 .installed.cfg
 *.egg
 
-# Environment variables
-.env
-.env.*
-!.env.example
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
 
-# Google API credentials
-token.json
-credentials/google_credentials.json
-credentials/*.json
-!credentials/*.example.json
-
-# Logs
-*.log
-*.log.*
-logs/
-
-# Cache
-.cache/
-data/cache/
-
-# OS specific
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Distribution / packaging
+.Python
+*.log

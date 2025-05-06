@@ -1,5 +1,7 @@
 # CollabGPT
 
+![CollabGPT](./collabgpt.png)
+
 ## AI Agent for Real-Time Team Collaboration in Documents
 
 CollabGPT is an innovative AI agent designed to seamlessly integrate with document collaboration workflows, acting as an intelligent team member that helps summarize changes, suggest edits, and resolve conflicts in real-time.
