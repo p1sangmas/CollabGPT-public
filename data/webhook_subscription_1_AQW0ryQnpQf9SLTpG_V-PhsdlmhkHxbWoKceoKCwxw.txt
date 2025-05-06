@@ -1,5 +1,0 @@
-Document ID: 1_AQW0ryQnpQf9SLTpG_V-PhsdlmhkHxbWoKceoKCwxw
-Channel ID: 31373276-993b-4a96-ab38-89995c695bbc
-Resource ID: zEp2Sih7rPkeAGWbHaopTiwxuS8
-Notification URL: https://948a-2001-d08-dc-8ef-d5ef-9126-36cc-f824.ngrok-free.app/webhook
-Expiration: 1746070540000
