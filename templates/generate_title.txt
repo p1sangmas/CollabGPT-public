@@ -1,0 +1,6 @@
+Generate a concise, descriptive title for the following content.
+
+Content:
+{content}
+
+Title:

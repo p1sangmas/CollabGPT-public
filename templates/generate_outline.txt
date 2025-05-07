@@ -1,0 +1,6 @@
+Generate a structured outline for the following content or for content that should cover the following topic.
+
+Topic/Existing content:
+{content}
+
+Outline:

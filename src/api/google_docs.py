@@ -10,15 +10,159 @@ This module handles all interactions with the Google Docs API, including:
 
 import os
 import json
-from typing import Dict, List, Any, Optional, Tuple
+import time
+import ssl
+import http.client
+import socket
+import threading
 from datetime import datetime
+from typing import Dict, Any, Optional, List, Callable, Tuple
+from queue import Queue, Empty
+import httplib2
 
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from googleapiclient.errors import HttpError
+from googleapiclient.http import build_http
+
+# Set longer timeout for API requests
+socket.setdefaulttimeout(180)  # 3 minutes
+
+class DocumentContentFetcher:
+    """Helper class to fetch document content with continuous retry mechanism"""
+    
+    def __init__(self, google_docs_api, logger):
+        self.google_docs_api = google_docs_api
+        self.logger = logger
+        self.content_queue = Queue()
+        self.error_queue = Queue()
+        self.active_fetches = {}  # document_id -> thread
+        
+    def fetch_content_async(self, document_id: str, max_retries: int = 5) -> Tuple[str, threading.Thread]:
+        """
+        Start an asynchronous fetch of document content with automatic retries
+        
+        Args:
+            document_id: The Google Doc ID to fetch
+            max_retries: Maximum number of retries
+            
+        Returns:
+            A tuple with the request ID and the thread handling the request
+        """
+        # Create unique request ID for this fetch
+        request_id = f"{document_id}_{int(time.time())}"
+        
+        # Create and start the fetch thread
+        fetch_thread = threading.Thread(
+            target=self._fetch_with_retries,
+            args=(document_id, request_id, max_retries),
+            daemon=True
+        )
+        
+        self.active_fetches[request_id] = fetch_thread
+        fetch_thread.start()
+        
+        return request_id, fetch_thread
+        
+    def _fetch_with_retries(self, document_id: str, request_id: str, max_retries: int) -> None:
+        """
+        Fetch document content with automatic retries
+        
+        Args:
+            document_id: The Google Doc ID
+            request_id: Unique identifier for this request
+            max_retries: Maximum number of retries
+        """
+        retry_count = 0
+        base_delay = 2  # Starting delay in seconds
+        
+        while retry_count <= max_retries:
+            try:
+                content = self.google_docs_api.get_document_content(document_id)
+                # Put successful result in the queue
+                self.content_queue.put((request_id, content))
+                return
+            except (ssl.SSLError, http.client.RemoteDisconnected, ConnectionError, 
+                    TimeoutError, socket.timeout) as e:
+                retry_count += 1
+                
+                if retry_count <= max_retries:
+                    # Exponential backoff with jitter
+                    delay = base_delay * (2 ** (retry_count - 1)) + (hash(document_id) % 2)
+                    self.logger.warning(f"Content fetch failed (attempt {retry_count}/{max_retries}): {e}. Retrying in {delay}s...")
+                    time.sleep(delay)
+                else:
+                    self.logger.error(f"Failed to fetch content for document {document_id} after {max_retries} attempts")
+                    # Put the error in the queue
+                    self.error_queue.put((request_id, str(e)))
+                    return
+        
+    def get_content(self, request_id: str, timeout: int = 300) -> Optional[str]:
+        """
+        Get the fetched content or wait for it to complete
+        
+        Args:
+            request_id: The request ID from fetch_content_async
+            timeout: Maximum time to wait in seconds
+            
+        Returns:
+            The document content or None if timeout or error
+        """
+        start_time = time.time()
+        
+        while time.time() - start_time < timeout:
+            # Check if content is available
+            try:
+                result_id, content = self.content_queue.get(block=False)
+                if result_id == request_id:
+                    return content
+                else:
+                    # Put it back for another consumer
+                    self.content_queue.put((result_id, content))
+            except Empty:
+                pass
+                
+            # Check if error is available
+            try:
+                error_id, error = self.error_queue.get(block=False)
+                if error_id == request_id:
+                    self.logger.error(f"Error fetching content for request {request_id}: {error}")
+                    return None
+                else:
+                    # Put it back for another consumer
+                    self.error_queue.put((error_id, error))
+            except Empty:
+                pass
+                
+            # Check if thread is still alive
+            if request_id in self.active_fetches and not self.active_fetches[request_id].is_alive():
+                # Thread died without putting result in queue
+                self.logger.error(f"Fetch thread for {request_id} terminated without result")
+                if request_id in self.active_fetches:
+                    del self.active_fetches[request_id]
+                return None
+                
+            # Short sleep to avoid CPU burning
+            time.sleep(0.1)
+            
+        # Timeout reached
+        self.logger.error(f"Timeout waiting for document content (request: {request_id})")
+        return None
+        
+    def cleanup(self, request_id: str) -> None:
+        """
+        Clean up resources for a completed request
+        
+        Args:
+            request_id: The request ID to clean up
+        """
+        if request_id in self.active_fetches:
+            # Don't wait for thread - daemon threads will be terminated on app exit
+            del self.active_fetches[request_id]
+
 
 class GoogleDocsAPI:
     """
@@ -43,6 +187,8 @@ class GoogleDocsAPI:
         self.credentials = None
         self.service = None
         self.drive_service = None
+        self._content_cache = {}  # document_id -> (timestamp, content)
+        self._cache_ttl = 30  # seconds
     
     def authenticate(self, use_service_account: bool = False) -> bool:
         """
@@ -81,8 +227,17 @@ class GoogleDocsAPI:
                         token.write(self.credentials.to_json())
             
             # Build the services using the authenticated credentials
+            # Configure the httplib2.Http object with extended timeout
+            # But don't pass it directly to build()
+            http = httplib2.Http(timeout=120)
+            
+            # Build the services with credentials only
             self.service = build('docs', 'v1', credentials=self.credentials)
             self.drive_service = build('drive', 'v3', credentials=self.credentials)
+            
+            # Then explicitly set the http client on the authorized http property
+            self.service._http.http = http
+            self.drive_service._http.http = http
             
             return True
             
@@ -109,16 +264,24 @@ class GoogleDocsAPI:
             print(f"Error retrieving document: {error}")
             return {}
     
-    def get_document_content(self, document_id: str) -> str:
+    def get_document_content(self, document_id: str, use_cache: bool = True) -> str:
         """
         Extract the plain text content from a document.
         
         Args:
             document_id: The Google Doc ID
+            use_cache: Whether to use cached content (if recent)
             
         Returns:
             The document content as plain text
         """
+        # Check cache first if allowed
+        if use_cache and document_id in self._content_cache:
+            timestamp, content = self._content_cache[document_id]
+            if time.time() - timestamp < self._cache_ttl:
+                return content
+                
+        # Not in cache or cache expired, fetch from API
         doc = self.get_document(document_id)
         if not doc:
             return ""
@@ -130,7 +293,44 @@ class GoogleDocsAPI:
                     if 'textRun' in para_elem:
                         content.append(para_elem['textRun']['content'])
         
-        return ''.join(content)
+        text_content = ''.join(content)
+        
+        # Update cache
+        self._content_cache[document_id] = (time.time(), text_content)
+        
+        return text_content
+        
+    def get_document_content_async(self, fetcher, document_id: str) -> str:
+        """
+        Extract document content using the async fetcher with continuous retries
+        
+        Args:
+            fetcher: DocumentContentFetcher instance
+            document_id: The Google Doc ID
+            
+        Returns:
+            Document content or empty string on failure
+        """
+        # Check cache first
+        if document_id in self._content_cache:
+            timestamp, content = self._content_cache[document_id]
+            if time.time() - timestamp < self._cache_ttl:
+                return content
+        
+        # Start async fetch
+        request_id, _ = fetcher.fetch_content_async(document_id)
+        
+        # Wait for content with timeout
+        content = fetcher.get_content(request_id)
+        
+        # Clean up
+        fetcher.cleanup(request_id)
+        
+        # Update cache if we got content
+        if content:
+            self._content_cache[document_id] = (time.time(), content)
+            
+        return content or ""
     
     def update_document(self, document_id: str, requests: List[Dict[str, Any]]) -> Dict[str, Any]:
         """

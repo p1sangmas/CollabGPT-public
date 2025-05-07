@@ -1,0 +1,6 @@
+Extract and list the key points from the following text. Include main ideas, arguments, and important facts or figures.
+
+Text:
+{content}
+
+Key points:

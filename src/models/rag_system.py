@@ -1,8 +1,8 @@
 """
-Basic RAG (Retrieval Augmented Generation) system for CollabGPT.
+Enhanced RAG (Retrieval Augmented Generation) system for CollabGPT.
 
-This module implements a simple RAG system that provides contextual information
-about documents to enhance AI-generated summaries and suggestions.
+This module implements an advanced RAG system that provides rich contextual information
+about documents with history tracking to enhance AI-generated summaries and suggestions.
 """
 
 from typing import Dict, List, Any, Optional, Tuple, Set
@@ -15,6 +15,13 @@ from pathlib import Path
 
 from ..utils import logger
 from ..config import settings
+
+# Import context window if available
+try:
+    from .context_window import ContextWindowManager, ContextWindow
+    CONTEXT_WINDOWS_AVAILABLE = True
+except ImportError:
+    CONTEXT_WINDOWS_AVAILABLE = False
 
 
 class DocumentChunk:
@@ -287,6 +294,57 @@ class RAGSystem:
             self.vector_store = SimpleVectorStore(persist_dir)
             
         self.logger = logger.get_logger("rag_system")
+        
+        # Track document collaboration metrics
+        self.document_activity = {}  # doc_id -> activity metrics
+        
+    def track_activity(self, doc_id: str, user_id: str, activity_type: str, 
+                      section_id: str = None, timestamp: datetime = None):
+        """
+        Track user activity on documents to build contextual awareness
+        
+        Args:
+            doc_id: Document identifier
+            user_id: User identifier
+            activity_type: Type of activity (edit, comment, view, etc.)
+            section_id: Optional section identifier
+            timestamp: Activity timestamp (defaults to now)
+        """
+        if doc_id not in self.document_activity:
+            self.document_activity[doc_id] = {
+                "last_updated": datetime.now(),
+                "edit_frequency": {},  # section -> frequency
+                "user_activity": {},   # user_id -> activity count
+                "section_history": {}  # section -> history of changes
+            }
+            
+        activity = self.document_activity[doc_id]
+        activity["last_updated"] = timestamp or datetime.now()
+        
+        # Update user activity
+        if user_id not in activity["user_activity"]:
+            activity["user_activity"][user_id] = {}
+        
+        if activity_type not in activity["user_activity"][user_id]:
+            activity["user_activity"][user_id][activity_type] = 0
+            
+        activity["user_activity"][user_id][activity_type] += 1
+        
+        # Update section edit frequency if applicable
+        if section_id and activity_type == "edit":
+            if section_id not in activity["edit_frequency"]:
+                activity["edit_frequency"][section_id] = 0
+            activity["edit_frequency"][section_id] += 1
+            
+            # Track section history
+            if section_id not in activity["section_history"]:
+                activity["section_history"][section_id] = []
+                
+            activity["section_history"][section_id].append({
+                "user_id": user_id,
+                "timestamp": timestamp or datetime.now(),
+                "activity_type": activity_type
+            })
             
     def process_document(self, doc_id: str, content: str, 
                          metadata: Dict[str, Any] = None) -> List[str]:
@@ -352,7 +410,8 @@ class RAGSystem:
         return chunk_ids
     
     def get_relevant_context(self, query: str, doc_id: str = None, 
-                             max_chunks: int = 3, include_history: bool = True) -> str:
+                             max_chunks: int = 3, include_history: bool = True,
+                             include_user_activity: bool = True) -> str:
         """
         Get relevant document context based on a query.
         
@@ -361,29 +420,33 @@ class RAGSystem:
             doc_id: Optional document ID to limit context to a specific document
             max_chunks: Maximum number of chunks to include
             include_history: Whether to include historical versions in context
+            include_user_activity: Whether to include user activity patterns
             
         Returns:
-            Combined text from relevant chunks
+            Combined text from relevant chunks with enhanced context
         """
         # First, perform a search
-        results = self.vector_store.search(query, max_chunks)
+        results = self.vector_store.search(query, max_chunks * 2)  # Get more results initially
         
         # Filter by document ID if specified
         if doc_id:
             results = [(chunk, score) for chunk, score in results 
-                       if chunk.doc_id == doc_id]
+                      if chunk.doc_id == doc_id]
         
         # Extract and combine the text from the chunks
         if not results:
             return ""
             
         context_parts = []
+        sections_included = set()  # Track which sections we've included
         
-        for chunk, score in results:
+        # First pass: include the most relevant chunks
+        for chunk, score in results[:max_chunks]:
             # Add metadata about the chunk
             header = f"Document: {chunk.metadata.get('title', chunk.doc_id)}"
             if 'section' in chunk.metadata:
                 header += f" | Section: {chunk.metadata['section']}"
+                sections_included.add(chunk.metadata.get('section'))
             
             # Include version information if available
             if chunk.version > 1:
@@ -397,6 +460,12 @@ class RAGSystem:
                 history_parts = self._format_chunk_history(chunk, max_versions=2)
                 if history_parts:
                     context_parts.append(history_parts)
+        
+        # Add document-level activity context if available and requested
+        if include_user_activity and doc_id and doc_id in self.document_activity:
+            activity_context = self._format_activity_context(doc_id, sections_included)
+            if activity_context:
+                context_parts.append(activity_context)
             
         return "\n\n---\n\n".join(context_parts)
     
@@ -441,6 +510,115 @@ class RAGSystem:
             
         return "\n".join(history_parts)
     
+    def _format_activity_context(self, doc_id: str, sections_included: Set[str]) -> str:
+        """
+        Format document activity context for inclusion in responses
+        
+        Args:
+            doc_id: Document identifier
+            sections_included: Set of section names already included in context
+            
+        Returns:
+            Formatted activity context
+        """
+        activity = self.document_activity.get(doc_id)
+        if not activity:
+            return ""
+            
+        parts = ["Document Activity Context:"]
+        
+        # Add last update time
+        parts.append(f"Last updated: {activity['last_updated'].strftime('%Y-%m-%d %H:%M')}")
+        
+        # Add most active users (up to 3)
+        user_activity = activity.get("user_activity", {})
+        if user_activity:
+            # Count total actions per user
+            user_totals = {}
+            for user_id, actions in user_activity.items():
+                user_totals[user_id] = sum(actions.values())
+                
+            # Get top users
+            top_users = sorted(user_totals.items(), key=lambda x: x[1], reverse=True)[:3]
+            if top_users:
+                parts.append("Most active users:")
+                for user_id, count in top_users:
+                    parts.append(f"- {user_id}: {count} total actions")
+        
+        # Add frequently edited sections not already in context
+        edit_frequency = activity.get("edit_frequency", {})
+        if edit_frequency:
+            frequent_sections = sorted(edit_frequency.items(), key=lambda x: x[1], reverse=True)
+            frequent_sections = [s for s in frequent_sections if s[0] not in sections_included][:2]
+            
+            if frequent_sections:
+                parts.append("Other frequently edited sections:")
+                for section_id, count in frequent_sections:
+                    parts.append(f"- {section_id}: {count} edits")
+        
+        return "\n".join(parts)
+
+    def get_document_context_window(self, doc_id: str, 
+                                   focus_section: str = None,
+                                   window_size: int = 3) -> str:
+        """
+        Get a contextual window of document content centered around a section
+        
+        Args:
+            doc_id: Document identifier
+            focus_section: Section to focus on (if None, use most active section)
+            window_size: Number of sections to include on each side of focus
+            
+        Returns:
+            Combined text from the context window
+        """
+        chunks = self.vector_store.get_chunks_by_doc_id(doc_id)
+        if not chunks:
+            return ""
+            
+        # Sort chunks by section index if available
+        chunks.sort(key=lambda c: c.metadata.get('section_index', 0))
+        
+        # If no focus section provided, use most active section from tracking
+        if not focus_section and doc_id in self.document_activity:
+            edit_frequency = self.document_activity[doc_id].get("edit_frequency", {})
+            if edit_frequency:
+                focus_section = max(edit_frequency.items(), key=lambda x: x[1])[0]
+        
+        # Find the focus chunk
+        focus_index = 0
+        for i, chunk in enumerate(chunks):
+            if (focus_section and 
+                chunk.metadata.get('section') == focus_section) or (
+                not focus_section and i == len(chunks) // 2):
+                focus_index = i
+                break
+                
+        # Calculate window boundaries
+        start_index = max(0, focus_index - window_size)
+        end_index = min(len(chunks) - 1, focus_index + window_size)
+        
+        # Build context from chunks in window
+        context_parts = []
+        
+        # Add document title
+        doc_title = chunks[0].metadata.get('title', doc_id)
+        context_parts.append(f"Document: {doc_title}")
+        
+        # Add context window
+        for i in range(start_index, end_index + 1):
+            chunk = chunks[i]
+            
+            # Mark the focus section
+            if i == focus_index:
+                section_header = f"[FOCUS] Section: {chunk.metadata.get('section', f'Section {i}')}"
+            else:
+                section_header = f"Section: {chunk.metadata.get('section', f'Section {i}')}"
+                
+            context_parts.append(f"{section_header}\n{chunk.text}")
+            
+        return "\n\n---\n\n".join(context_parts)
+        
     def get_document_history(self, doc_id: str, section_title: str = None) -> Dict[str, Any]:
         """
         Get the change history for a document or specific section.
@@ -501,6 +679,45 @@ class RAGSystem:
                 history["sections"].append(section_history)
         
         return history
+    
+    def analyze_document_structure(self, doc_id: str) -> Dict[str, Any]:
+        """
+        Analyze document structure to provide metadata for RAG context
+        
+        Args:
+            doc_id: Document identifier
+            
+        Returns:
+            Dictionary with structural metadata
+        """
+        chunks = self.vector_store.get_chunks_by_doc_id(doc_id)
+        if not chunks:
+            return {"error": f"No document found with ID: {doc_id}"}
+            
+        # Extract section metadata
+        sections = []
+        for chunk in chunks:
+            if 'section' in chunk.metadata:
+                sections.append({
+                    "section": chunk.metadata['section'],
+                    "index": chunk.metadata.get('section_index', 0),
+                    "word_count": len(chunk.text.split()),
+                    "last_updated": chunk.last_updated.isoformat()
+                })
+        
+        # Sort sections by index
+        sections.sort(key=lambda s: s["index"])
+        
+        # Calculate basic document statistics
+        total_words = sum(section["word_count"] for section in sections)
+        
+        return {
+            "document_id": doc_id,
+            "section_count": len(sections),
+            "total_words": total_words,
+            "average_section_length": total_words / len(sections) if sections else 0,
+            "sections": sections
+        }
     
     def _chunk_document(self, doc_id: str, content: str, 
                         metadata: Dict[str, Any] = None) -> List[DocumentChunk]:

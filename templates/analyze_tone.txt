@@ -1,0 +1,6 @@
+Analyze the tone and style of the following text. Identify characteristics like formality, technical level, emotional sentiment, and writing style.
+
+Text to analyze:
+{content}
+
+Tone analysis:

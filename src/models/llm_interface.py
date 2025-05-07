@@ -2,7 +2,7 @@
 LLM Interface for CollabGPT.
 
 This module provides an interface to interact with language models,
-supporting both local models and API-based services.
+supporting both local models and API-based services, with advanced prompt chaining capabilities.
 """
 
 import os
@@ -89,6 +89,183 @@ class PromptTemplate:
         with open(file_path, 'r') as f:
             template = f.read()
         return cls(template)
+
+
+class PromptChain:
+    """
+    Chain of prompts for handling complex reasoning tasks.
+    
+    Allows breaking down complicated tasks into multiple steps with intermediate
+    results feeding into subsequent prompts.
+    """
+    
+    def __init__(self, llm_interface, name: str = None):
+        """
+        Initialize a prompt chain.
+        
+        Args:
+            llm_interface: The LLMInterface instance to use for generation
+            name: Optional name for the chain for logging purposes
+        """
+        self.llm = llm_interface
+        self.name = name or f"chain_{id(self)}"
+        self.steps = []
+        self.results = []
+        self.current_step = 0
+        self.logger = logger.get_logger(f"prompt_chain.{self.name}")
+        
+    def add_step(self, 
+                template_or_prompt: Union[str, PromptTemplate], 
+                name: str = None,
+                max_tokens: int = 500,
+                temperature: float = None,
+                input_mapping: Dict[str, str] = None):
+        """
+        Add a step to the chain.
+        
+        Args:
+            template_or_prompt: Either a template name, raw prompt string, or PromptTemplate
+            name: Optional name for this step
+            max_tokens: Maximum tokens for generation in this step
+            temperature: Temperature to use for this step
+            input_mapping: Mapping of input variable names to result fields from previous steps
+                           e.g., {"section_content": "step_1.text"} to use text from step 1
+        """
+        step_name = name or f"step_{len(self.steps) + 1}"
+        
+        step = {
+            "name": step_name,
+            "template_or_prompt": template_or_prompt,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "input_mapping": input_mapping or {}
+        }
+        
+        self.steps.append(step)
+        self.logger.debug(f"Added step '{step_name}' to chain")
+        return self
+        
+    def execute(self, **initial_inputs) -> Dict[str, Any]:
+        """
+        Execute the prompt chain from start to finish.
+        
+        Args:
+            **initial_inputs: Initial input values for the first steps
+            
+        Returns:
+            Dictionary with all step results
+        """
+        self.results = []
+        self.current_step = 0
+        inputs = initial_inputs.copy()
+        
+        for i, step in enumerate(self.steps):
+            self.current_step = i + 1
+            
+            # Prepare inputs for this step by applying mappings
+            step_inputs = inputs.copy()
+            
+            # Apply input mappings from previous step results
+            for target_var, source_path in step.get("input_mapping", {}).items():
+                if "." in source_path:
+                    # Format is "step_name.field" e.g., "analyze_tone.text"
+                    src_step, field = source_path.split(".", 1)
+                    
+                    # Find the source step result
+                    source_result = next((r for r in self.results if r["name"] == src_step), None)
+                    
+                    if source_result and field in source_result["result"].__dict__:
+                        # Get the specified field from the LLMResponse
+                        step_inputs[target_var] = getattr(source_result["result"], field)
+                    else:
+                        self.logger.warning(f"Mapping '{source_path}' not found for step {step['name']}")
+                        
+            # Execute the step
+            result = self._execute_step(step, **step_inputs)
+            
+            # Record the step result
+            self.results.append({
+                "name": step["name"],
+                "result": result,
+                "inputs": step_inputs
+            })
+            
+            # Add this step's result to the inputs dictionary for future steps
+            inputs[step["name"]] = result
+            
+            # If this step failed, stop the chain
+            if not result.success:
+                self.logger.error(f"Chain stopped at step {step['name']}: {result.error}")
+                break
+                
+        # Return a dictionary of all results
+        return {
+            "success": all(r["result"].success for r in self.results),
+            "steps": self.results,
+            "final_result": self.results[-1]["result"] if self.results else None
+        }
+        
+    def _execute_step(self, step: Dict[str, Any], **inputs) -> LLMResponse:
+        """
+        Execute a single step in the chain.
+        
+        Args:
+            step: The step configuration
+            **inputs: Input values for this step
+            
+        Returns:
+            The LLMResponse from this step
+        """
+        template_or_prompt = step["template_or_prompt"]
+        
+        # Log the execution
+        self.logger.info(f"Executing step '{step['name']}' with inputs: {list(inputs.keys())}")
+        
+        # Handle different prompt types
+        if isinstance(template_or_prompt, str):
+            # Check if it's a template name
+            template = self.llm.get_template(template_or_prompt)
+            
+            if template:
+                # It's a template name
+                try:
+                    return self.llm.generate_with_template(
+                        template_or_prompt, 
+                        max_tokens=step["max_tokens"],
+                        temperature=step["temperature"],
+                        **inputs
+                    )
+                except Exception as e:
+                    self.logger.error(f"Error executing template '{template_or_prompt}': {e}")
+                    return LLMResponse("", error=f"Template execution error: {str(e)}")
+            else:
+                # It's a raw prompt string
+                try:
+                    formatted_prompt = template_or_prompt.format(**inputs)
+                    return self.llm.generate(
+                        formatted_prompt,
+                        max_tokens=step["max_tokens"],
+                        temperature=step["temperature"]
+                    )
+                except Exception as e:
+                    self.logger.error(f"Error formatting prompt: {e}")
+                    return LLMResponse("", error=f"Prompt formatting error: {str(e)}")
+        elif isinstance(template_or_prompt, PromptTemplate):
+            # It's a PromptTemplate instance
+            try:
+                formatted_prompt = template_or_prompt.format(**inputs)
+                return self.llm.generate(
+                    formatted_prompt,
+                    max_tokens=step["max_tokens"],
+                    temperature=step["temperature"]
+                )
+            except Exception as e:
+                self.logger.error(f"Error using PromptTemplate: {e}")
+                return LLMResponse("", error=f"PromptTemplate error: {str(e)}")
+        else:
+            error = f"Unknown prompt type in step '{step['name']}': {type(template_or_prompt)}"
+            self.logger.error(error)
+            return LLMResponse("", error=error)
 
 
 class LLMInterface:
@@ -426,6 +603,41 @@ class LLMInterface:
                 "Version 1:\n{version1}\n\n"
                 "Version 2:\n{version2}\n\n"
                 "Suggested resolution:"
+            ),
+            "analyze_tone": (
+                "Analyze the tone and style of the following text. Identify characteristics "
+                "like formality, technical level, emotional sentiment, and writing style.\n\n"
+                "Text to analyze:\n{content}\n\n"
+                "Tone analysis:"
+            ),
+            "extract_key_points": (
+                "Extract and list the key points from the following text. Include main ideas, "
+                "arguments, and important facts or figures.\n\n"
+                "Text:\n{content}\n\n"
+                "Key points:"
+            ),
+            "generate_title": (
+                "Generate a concise, descriptive title for the following content.\n\n"
+                "Content:\n{content}\n\n"
+                "Title:"
+            ),
+            "identify_ambiguities": (
+                "Identify any ambiguous statements, unclear explanations, or potential "
+                "misunderstandings in the following text.\n\n"
+                "Text:\n{content}\n\n"
+                "Ambiguities and unclear points:"
+            ),
+            "generate_outline": (
+                "Generate a structured outline for the following content or for content that "
+                "should cover the following topic.\n\n"
+                "Topic/Existing content:\n{content}\n\n"
+                "Outline:"
+            ),
+            "reasoning_step": (
+                "Reason step-by-step about the following problem or question. Break down your "
+                "thinking process and consider multiple perspectives before reaching a conclusion.\n\n"
+                "Problem:\n{problem}\n\n"
+                "Step-by-step reasoning:"
             )
         }
         
@@ -495,3 +707,15 @@ class LLMInterface:
             An LLMResponse object containing the generated text or error
         """
         return self.generate(prompt, max_tokens, temperature)
+
+    def create_chain(self, name: str = None) -> PromptChain:
+        """
+        Create a new prompt chain for complex reasoning tasks.
+        
+        Args:
+            name: Optional name for the chain
+            
+        Returns:
+            A new PromptChain instance configured with this LLM interface
+        """
+        return PromptChain(self, name)

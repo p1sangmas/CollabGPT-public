@@ -1,0 +1,6 @@
+Identify any ambiguous statements, unclear explanations, or potential misunderstandings in the following text.
+
+Text:
+{content}
+
+Ambiguities and unclear points:

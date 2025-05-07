@@ -1,0 +1,6 @@
+Reason step-by-step about the following problem or question. Break down your thinking process and consider multiple perspectives before reaching a conclusion.
+
+Problem:
+{problem}
+
+Step-by-step reasoning:

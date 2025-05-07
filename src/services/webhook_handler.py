@@ -10,11 +10,15 @@ import hashlib
 import hmac
 import time
 import asyncio
+import os
+import ssl
+import http.client
+import threading
 from typing import Dict, Any, Optional, Callable, List
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
-from ..api.google_docs import GoogleDocsAPI
+from ..api.google_docs import GoogleDocsAPI, DocumentContentFetcher
 from ..utils import logger
 from ..utils.performance import get_performance_monitor, measure_latency
 
@@ -40,6 +44,9 @@ class WebhookHandler:
         self.performance_monitor = get_performance_monitor()
         self.thread_pool = ThreadPoolExecutor(max_workers=5)  # Pool for parallel processing
         self.latency_callback_queue = asyncio.Queue()
+        self.content_fetcher = DocumentContentFetcher(google_docs_api, self.logger)
+        self.fetch_lock = threading.Lock()  # To prevent multiple simultaneous fetches for the same document
+        self.ongoing_fetches = {}  # document_id -> request_id
         
     def register_callback(self, event_type: str, callback: Callable) -> None:
         """
@@ -230,7 +237,7 @@ class WebhookHandler:
                 self.logger.error(f"Error processing Google notification: {e}", exc_info=True)
                 return False
     
-    def _process_document_change(self, document_id: str, data: Dict[str, Any]) -> None:
+    def _process_document_change(self, document_id: str, data: Dict[str, Any] = None) -> None:
         """
         Process a document change event.
         
@@ -241,27 +248,39 @@ class WebhookHandler:
         self.logger.info(f"Processing document change for {document_id}")
         
         try:
-            # Get the current content of the document
-            self.logger.debug(f"Fetching current content for document {document_id}")
-            current_content = self.google_docs_api.get_document_content(document_id)
+            # Get the previous content from cache if available
+            previous_content = ""
+            previous_content_path = os.path.join(
+                "data", f"test_document_{document_id}_content.txt"
+            )
+            if os.path.exists(previous_content_path):
+                with open(previous_content_path, 'r', encoding='utf-8') as f:
+                    previous_content = f.read()
+            
+            # Get the current content using our continuous read operation pattern
+            # This will handle the timeout errors gracefully
+            current_content = self._get_document_content_continuous(document_id)
             
             if not current_content:
-                self.logger.error(f"Failed to retrieve content for document {document_id}")
+                self.logger.error(f"Failed to retrieve content for document {document_id} after multiple attempts")
                 return
                 
             self.logger.debug(f"Retrieved document content: {len(current_content)} characters")
-                
-            # Get previous content if available
-            previous_content = ""
-            if document_id in self.document_history:
-                previous_content = self.document_history.get(document_id, {}).get('content', '')
-                self.logger.debug(f"Previous content length: {len(previous_content)} characters")
+            
+            # Save current content for future reference
+            with open(previous_content_path, 'w', encoding='utf-8') as f:
+                f.write(current_content)
                 
             # Store current content in history
             self.document_history[document_id] = {
                 'content': current_content,
                 'last_updated': datetime.now().isoformat()
             }
+            
+            # Skip if no previous content (first notification)
+            if not previous_content:
+                self.logger.info(f"First change notification, no previous content to compare")
+                # Still call callbacks with empty previous content
             
             # Call registered callbacks
             if 'change' in self.callbacks:
@@ -270,16 +289,17 @@ class WebhookHandler:
                     'current_content': current_content,
                     'previous_content': previous_content,
                     'timestamp': time.time(),
-                    'metadata': data
+                    'metadata': data or {}
                 }
                 
                 self.logger.info(f"Calling {len(self.callbacks['change'])} registered change callbacks")
                 
                 for callback in self.callbacks['change']:
                     try:
-                        self.logger.debug(f"Calling change callback: {callback.__name__ if hasattr(callback, '__name__') else 'anonymous'}")
-                        callback(change_data)
-                        self.logger.debug("Callback executed successfully")
+                        with measure_latency("handle_document_change", self.performance_monitor):
+                            self.logger.debug(f"Calling change callback: {callback.__name__ if hasattr(callback, '__name__') else 'anonymous'}")
+                            callback(change_data)
+                            self.logger.debug("Callback executed successfully")
                     except Exception as e:
                         self.logger.error(f"Error in change callback: {e}", exc_info=True)
                         
@@ -345,3 +365,46 @@ class WebhookHandler:
         self.logger.info(f"Simulating change event for document {document_id}")
         self._process_document_change(document_id, {'eventType': 'change', 'simulated': True})
         self.logger.info(f"Simulation completed for document {document_id}")
+
+    def _get_document_content_continuous(self, document_id: str) -> str:
+        """
+        Get document content using the continuous read operation pattern.
+        This method provides fault tolerance against timeouts and connection issues.
+        
+        Args:
+            document_id: The ID of the document to retrieve
+            
+        Returns:
+            The document content as text, or empty string on complete failure
+        """
+        try:
+            with self.fetch_lock:  # Ensure we don't start multiple fetches for the same document
+                # Check if we already have an ongoing fetch for this document
+                if document_id in self.ongoing_fetches:
+                    request_id = self.ongoing_fetches[document_id]
+                    self.logger.info(f"Using existing fetch request {request_id} for document {document_id}")
+                else:
+                    # Start a new asynchronous fetch
+                    self.logger.info(f"Starting continuous read operation for document {document_id}")
+                    request_id, _ = self.content_fetcher.fetch_content_async(document_id, max_retries=5)
+                    self.ongoing_fetches[document_id] = request_id
+            
+            # Wait for the content with a reasonable timeout
+            content = self.content_fetcher.get_content(request_id, timeout=300)  # 5 minutes max wait
+            
+            # Clean up completed request
+            with self.fetch_lock:
+                if document_id in self.ongoing_fetches and self.ongoing_fetches[document_id] == request_id:
+                    del self.ongoing_fetches[document_id]
+                self.content_fetcher.cleanup(request_id)
+            
+            if content:
+                self.logger.info(f"Successfully retrieved content for document {document_id} ({len(content)} characters)")
+                return content
+            else:
+                self.logger.error(f"Failed to retrieve content for document {document_id} after multiple attempts")
+                return ""
+                
+        except Exception as e:
+            self.logger.error(f"Error in continuous read operation for document {document_id}: {e}", exc_info=True)
+            return ""
