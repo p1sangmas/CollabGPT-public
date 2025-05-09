@@ -11,6 +11,7 @@ import signal
 import time
 import json
 from typing import Dict, Any, List, Optional, Callable
+from datetime import datetime
 from threading import Thread
 import asyncio
 import http.server
@@ -490,7 +491,7 @@ class CollabGPT:
             Dictionary with activity information
         """
         if not self.activity_tracker:
-            return {"error": "Activity tracker not initialized"}
+            return {"error": "Activity tracker not initialized", "events": []}
             
         # Get active users
         active_users = self.activity_tracker.get_active_users(document_id, hours)
@@ -514,12 +515,47 @@ class CollabGPT:
                 for conflict in self.conflict_detector.get_conflicts(document_id, resolved=True)
             ]
         
+        # Get actual activity events from the activity tracker
+        activity_events = self.activity_tracker.get_document_activities(document_id, hours)
+        
+        # Format activity events for the UI
+        events = []
+        for activity in activity_events:
+            # Handle activity_type properly, whether it's an enum or a string
+            activity_type = activity.get('activity_type')
+            if isinstance(activity_type, ActivityType):
+                type_name = activity_type.name
+                description = ActivityType.get_description(activity_type)
+            else:
+                # Fallback if activity_type is not an enum
+                type_name = str(activity_type) if activity_type else "UNKNOWN"
+                description = 'Document was updated'
+            
+            # Format timestamp properly
+            timestamp = activity.get('timestamp')
+            if isinstance(timestamp, datetime):
+                formatted_time = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                formatted_time = time.strftime("%Y-%m-%d %H:%M:%S")
+            
+            event = {
+                'id': f"event_{int(time.time())}_{len(events)}",  # Ensure unique ID
+                'type': type_name,
+                'user': activity.get('user_id', 'unknown'),
+                'timestamp': formatted_time,
+                'document_id': document_id,
+                'document_name': self.monitored_documents.get(document_id, {}).get('name', 'Unknown Document'),
+                'description': description
+            }
+            events.append(event)
+            
         return {
             'document_id': document_id,
             'window_hours': hours,
             'active_users': active_users,
             'comment_statistics': comment_stats,
-            'conflicts': conflicts
+            'conflicts': conflicts,
+            'events': events  # This is the key needed by the UI template
         }
     
     def _register_event_handlers(self) -> None:
@@ -873,10 +909,16 @@ class CollabGPT:
         docs = settings.get_monitored_documents()
         
         for doc in docs:
-            doc_id = doc.get('id')
-            if doc_id:
-                self.monitored_documents[doc_id] = doc
-                self.logger.info(f"Loaded monitored document: {doc.get('name', doc_id)}")
+            # Handle both string IDs and dictionary documents
+            if isinstance(doc, str):
+                doc_id = doc
+                self.monitored_documents[doc_id] = {'id': doc_id, 'name': doc_id}
+                self.logger.info(f"Loaded monitored document ID: {doc_id}")
+            else:
+                doc_id = doc.get('id')
+                if doc_id:
+                    self.monitored_documents[doc_id] = doc
+                    self.logger.info(f"Loaded monitored document: {doc.get('name', doc_id)}")
     
     def generate_smart_edit_suggestions(self, document_id: str, 
                                 max_suggestions: int = 3, 

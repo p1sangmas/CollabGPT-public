@@ -1,0 +1,58 @@
+<!-- Document map template -->
+<div class="p-4">
+    <h3 class="text-lg font-medium mb-4">Document Structure Map</h3>
+    
+    {% if not doc_map or not doc_map.sections %}
+        <div class="bg-yellow-50 text-yellow-800 p-4 rounded-md">
+            No document structure information available. Try analyzing the document first.
+        </div>
+    {% else %}
+        <div class="space-y-4">
+            <!-- Document Summary -->
+            <div class="bg-blue-50 p-3 rounded">
+                <h4 class="font-medium">Document Overview</h4>
+                <div class="text-sm mt-1">Title: {{ doc_map.title }}</div>
+                <div class="text-sm">Sections: {{ doc_map.sections|length }}</div>
+                <div class="text-sm">Last Modified: {{ doc_map.last_modified }}</div>
+            </div>
+            
+            <!-- Sections List -->
+            <div class="border rounded overflow-hidden">
+                <div class="bg-gray-100 px-4 py-2 font-medium text-sm">
+                    Document Sections
+                </div>
+                <ul class="divide-y">
+                    {% for section in doc_map.sections %}
+                        <li class="p-3 hover:bg-gray-50">
+                            <div class="font-medium">{{ section.title or 'Untitled Section' }}</div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                Length: {{ section.length }} characters
+                            </div>
+                            <div class="text-sm text-gray-700 mt-2">
+                                {{ section.summary|truncate(100) if section.summary else 'No summary available' }}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <!-- Topics and Themes -->
+            {% if doc_map.topics %}
+                <div class="border rounded overflow-hidden">
+                    <div class="bg-gray-100 px-4 py-2 font-medium text-sm">
+                        Main Topics
+                    </div>
+                    <div class="p-3">
+                        <div class="flex flex-wrap gap-2">
+                            {% for topic in doc_map.topics %}
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                    {{ topic }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

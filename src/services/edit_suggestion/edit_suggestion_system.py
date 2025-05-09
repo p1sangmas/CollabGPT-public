@@ -176,6 +176,14 @@ class EditSuggestionSystem:
             suggestion = self._generate_suggestion_with_reasoning(doc_id, chunk, section_history)
             
             if suggestion:
+                # Generate a unique ID for the suggestion
+                unique_id = f"suggestion_{suggestion.section_id}_{int(datetime.now().timestamp())}"
+                # Store in the section_id field which is used as the suggestion ID
+                suggestion.section_id = unique_id
+                
+                # Store the suggestion for later retrieval
+                self.store_suggestion(suggestion)
+                
                 suggestions.append(suggestion)
                 
             # Don't exceed maximum suggestions
@@ -505,3 +513,63 @@ class EditSuggestionSystem:
         self.logger.info(f"Recorded feedback for suggestion {suggestion_id}: " +
                        f"{'accepted' if accepted else 'rejected'}" +
                        (f", feedback: {user_feedback}" if user_feedback else ""))
+    
+    def get_suggestion_by_id(self, suggestion_id: str) -> Optional[EditSuggestion]:
+        """
+        Retrieve a specific suggestion by its ID.
+        
+        Args:
+            suggestion_id: The identifier of the suggestion to retrieve
+            
+        Returns:
+            The EditSuggestion object if found, None otherwise
+        """
+        self.logger.info(f"Retrieving suggestion with ID: {suggestion_id}")
+        
+        # In the current implementation, the section_id is used as the suggestion ID
+        # Let's find the most recent suggestion with this section ID
+        
+        # First, check if we have any stored suggestions with this ID
+        if hasattr(self, 'stored_suggestions') and suggestion_id in self.stored_suggestions:
+            return self.stored_suggestions[suggestion_id]
+        
+        # If not, we'll create a simple placeholder suggestion
+        # In a real implementation, you might want to retrieve this from a database
+        try:
+            # Parse the section ID from the suggestion ID format (if it's in a format like "section_123")
+            section_parts = suggestion_id.split('_')
+            if len(section_parts) > 1:
+                section_name = section_parts[0]
+                section_number = '_'.join(section_parts[1:])
+                section_title = f"{section_name.capitalize()} {section_number}"
+            else:
+                section_title = f"Section {suggestion_id}"
+            
+            # Create a placeholder suggestion with minimal information
+            placeholder = EditSuggestion(
+                section_id=suggestion_id,
+                section_title=section_title,
+                original_text="[Original content not available]",
+                suggestion="[Suggestion content not available]",
+                suggestion_type=SuggestionType.CLARITY,  # Default type
+                reasoning="This suggestion was previously generated but details are no longer available.",
+                confidence=0.5
+            )
+            
+            return placeholder
+        except Exception as e:
+            self.logger.error(f"Error retrieving suggestion {suggestion_id}: {e}")
+            return None
+        
+    def store_suggestion(self, suggestion: EditSuggestion) -> None:
+        """
+        Store a suggestion for later retrieval.
+        
+        Args:
+            suggestion: The EditSuggestion object to store
+        """
+        if not hasattr(self, 'stored_suggestions'):
+            self.stored_suggestions = {}
+            
+        self.stored_suggestions[suggestion.section_id] = suggestion
+        self.logger.info(f"Stored suggestion for section {suggestion.section_id}")

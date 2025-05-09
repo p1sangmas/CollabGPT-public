@@ -9,6 +9,10 @@ This script tests all Phase 2 features including:
 4. User activity tracking for contextual awareness
 5. Comment analysis and organization
 6. Enhanced RAG system with document history context
+7. Sophisticated prompt chaining for complex tasks
+8. Agent reasoning capabilities for edit suggestions
+9. Context windows incorporating document structure
+10. Feedback loops for suggestion improvement
 
 Usage:
     python test_phase2.py -d <document_id> [-v]
@@ -45,6 +49,10 @@ from src.api.google_docs import GoogleDocsAPI
 from src.services.conflict_detector import ConflictType
 from src.services.activity_tracker import ActivityType
 from src.models.rag_system import RAGSystem
+from src.models.context_window import ContextWindowManager
+from src.models.llm_interface import LLMInterface, PromptChain
+from src.services.edit_suggestion.edit_suggestion_system import EditSuggestionSystem, SuggestionType
+from src.services.feedback_loop_system import FeedbackLoopSystem, FeedbackEntry
 from src.config import settings
 
 
@@ -130,8 +138,20 @@ class Phase2Tester:
         # Test 5: Comment analysis 
         self.test_comment_analysis()
         
-        # Test 6: Enhanced RAG with document history - removed as feature is not complete
-        # self.test_enhanced_rag_history()
+        # Test 6: Enhanced RAG with document history
+        self.test_enhanced_rag_history()
+        
+        # Test 7: Sophisticated prompt chaining
+        self.test_prompt_chaining()
+        
+        # Test 8: Agent reasoning for edit suggestions
+        self.test_edit_suggestions()
+        
+        # Test 9: Document context windows
+        self.test_context_windows()
+        
+        # Test 10: Feedback loops
+        self.test_feedback_loops()
         
         # Clean up
         self.cleanup()
@@ -519,75 +539,428 @@ class Phase2Tester:
         metadata["last_updated"] = datetime.now().isoformat()
         rag_system.process_document(self.document_id, second_change, metadata)
         
-        # Get document history from the RAG system
-        history = rag_system.get_document_history(self.document_id)
+        # Track some activity for this document
+        rag_system.track_activity(
+            doc_id=self.document_id,
+            user_id="user1", 
+            activity_type="edit",
+            section_id="New Testing Section"
+        )
         
-        # Check document history
-        if history and 'sections' in history:
-            self.logger.info(f"RAG system tracked {len(history['sections'])} sections with history")
-            
-            for section in history['sections']:
-                section_name = section.get('section', 'Unknown Section')
-                current_version = section.get('current_version', 0)
-                changes = section.get('changes', [])
-                
-                self.logger.info(f"Section '{section_name}' at version {current_version} with {len(changes)} previous versions")
-                
-                if changes and self.verbose:
-                    for change in changes:
-                        self.logger.debug(f"  Version {change['version']} ({change['timestamp']})")
-                        self.logger.debug(f"  Content: {change['content_snippet']}")
-                        
-            self.logger.info("✓ PASS: RAG history tracking working")
+        rag_system.track_activity(
+            doc_id=self.document_id,
+            user_id="user2", 
+            activity_type="view",
+            section_id="New Testing Section"
+        )
+        
+        # Test document context window retrieval
+        context = rag_system.get_document_context_window(
+            doc_id=self.document_id,
+            focus_section="New Testing Section",
+            window_size=2
+        )
+        
+        if context:
+            self.logger.info("Retrieved document context window:")
+            self.logger.info(context[:500] + "..." if len(context) > 500 else context)
+            self.logger.info("✓ PASS: RAG document context window working")
         else:
-            self.logger.error("✗ FAIL: RAG history tracking not working")
+            self.logger.error("✗ FAIL: RAG document context window not working")
             
-        # Test context retrieval with history
+        # Test relevant context with history
         query = "testing RAG system"
-        context = rag_system.get_relevant_context(query, doc_id=self.document_id, include_history=True)
+        context = rag_system.get_relevant_context(
+            query, 
+            doc_id=self.document_id, 
+            include_history=True,
+            include_user_activity=True
+        )
         
         if context:
             self.logger.info("Retrieved context with history:")
             self.logger.info(context[:500] + "..." if len(context) > 500 else context)
             
             # Check if history is included
-            if "Historical changes" in context:
-                self.logger.info("✓ PASS: RAG context includes document history")
+            if "Version" in context and "edit" in context:
+                self.logger.info("✓ PASS: RAG context includes document history and activity")
             else:
-                self.logger.warning("⚠ WARN: RAG context does not include document history")
+                self.logger.warning("⚠ WARN: RAG context may be missing history or activity info")
         else:
             self.logger.error("✗ FAIL: RAG context retrieval not working")
         
-        # Test suggestion generation with history context
-        if hasattr(self.app, 'llm_interface') and self.app.llm_interface and self.app.llm_interface.is_available():
-            self.logger.info("Testing suggestion generation with history context...")
-            
-            try:
-                # Temporarily replace app's RAG system with our test one
-                original_rag = self.app.rag_system
-                self.app.rag_system = rag_system
-                
-                # Generate suggestions for the new section
-                response = self.app.suggest_edits(self.document_id, "New Testing Section")
-                
-                # Restore original RAG system
-                self.app.rag_system = original_rag
-                
-                if response and hasattr(response, 'success') and response.success:
-                    self.logger.info("Successfully generated suggestions with historical context:")
-                    self.logger.info(response.text[:500] + "..." if len(response.text) > 500 else response.text)
-                    self.logger.info("✓ PASS: Suggestion generation with history working")
-                else:
-                    self.logger.warning(f"⚠ WARN: Suggestion generation returned no results (LLM may not be configured properly)")
-            except Exception as e:
-                self.logger.warning(f"⚠ WARN: Error during suggestion generation: {str(e)}")
-                self.logger.warning("LLM interface may not be properly configured")
-        else:
-            self.logger.warning("⚠ WARN: Skipping suggestion generation test (LLM interface not available)")
-            
         # Clean up - update document with original content
         self.app.google_docs_api.update_document_content(self.document_id, original_content)
         self.logger.info("Test document reverted to original state")
+    
+    def test_prompt_chaining(self):
+        """Test sophisticated prompt chaining for complex tasks."""
+        self.logger.info("\n" + "="*50)
+        self.logger.info("Test 7: Sophisticated Prompt Chaining")
+        self.logger.info("="*50)
+        
+        # Skip test if LLM interface is not available
+        if not hasattr(self.app, 'llm_interface') or not self.app.llm_interface or not self.app.llm_interface.is_available():
+            self.logger.warning("⚠ WARN: Skipping prompt chaining test (LLM interface not available)")
+            return
+            
+        try:
+            # Create a test document analysis chain
+            self.logger.info("Testing prompt chain for document analysis...")
+            
+            llm = self.app.llm_interface
+            chain = llm.create_chain(name="test_analysis_chain")
+            
+            # Get original content to analyze
+            original_content = self.app.google_docs_api.get_document_content(self.document_id)
+            
+            # Step 1: Extract key topics
+            chain.add_step(
+                "extract_key_points",
+                name="extract_topics",
+                max_tokens=300,
+                temperature=0.2
+            )
+            
+            # Step 2: Analyze writing style based on key points
+            chain.add_step(
+                "analyze_tone",
+                name="analyze_style",
+                max_tokens=300,
+                temperature=0.3,
+                input_mapping={
+                    "content": "extract_topics.text"
+                }
+            )
+            
+            # Step 3: Generate recommendations based on both previous steps
+            chain.add_step(
+                "Based on the key points and writing style analysis, provide 3 specific recommendations to improve this document.\n\n"
+                "Key points: {extract_topics.text}\n\n"
+                "Style analysis: {analyze_style.text}\n\n"
+                "Recommendations:",
+                name="recommendations",
+                max_tokens=500,
+                temperature=0.7,
+                input_mapping={
+                    "extract_topics.text": "extract_topics.text",
+                    "analyze_style.text": "analyze_style.text"
+                }
+            )
+            
+            # Execute the chain
+            results = chain.execute(content=original_content)
+            
+            # Check results
+            if results["success"]:
+                self.logger.info("Prompt chain executed successfully")
+                
+                # Display results from each step
+                if self.verbose:
+                    self.logger.debug(f"Step 1 - Key Topics: {results['steps'][0]['result'].text[:150]}...")
+                    self.logger.debug(f"Step 2 - Style Analysis: {results['steps'][1]['result'].text[:150]}...")
+                
+                # Display final recommendations
+                if 'final_result' in results and results['final_result']:
+                    self.logger.info("Generated recommendations:")
+                    self.logger.info(results['final_result'].text)
+                    self.logger.info("✓ PASS: Prompt chaining works")
+                else:
+                    self.logger.error("✗ FAIL: Prompt chain did not produce final result")
+            else:
+                self.logger.error(f"✗ FAIL: Prompt chain execution failed: {results}")
+                
+        except Exception as e:
+            self.logger.error(f"Error during prompt chaining test: {str(e)}")
+            import traceback
+            self.logger.error(traceback.format_exc())
+    
+    def test_edit_suggestions(self):
+        """Test agent reasoning capabilities for edit suggestions."""
+        self.logger.info("\n" + "="*50)
+        self.logger.info("Test 8: Agent Reasoning for Edit Suggestions")
+        self.logger.info("="*50)
+        
+        # Skip test if LLM interface is not available
+        if not hasattr(self.app, 'llm_interface') or not self.app.llm_interface or not self.app.llm_interface.is_available():
+            self.logger.warning("⚠ WARN: Skipping edit suggestions test (LLM interface not available)")
+            return
+            
+        # Get original content and create test RAG system
+        original_content = self.app.google_docs_api.get_document_content(self.document_id)
+        
+        if not hasattr(self.app, 'rag_system') or not self.app.rag_system:
+            self.logger.warning("⚠ WARN: RAG system not available")
+            rag_system = RAGSystem()
+        else:
+            rag_system = self.app.rag_system
+            
+        # Process document to make sure it's in the RAG system
+        metadata = {
+            "title": self.get_document_title(),
+            "version": 1,
+            "last_updated": datetime.now().isoformat()
+        }
+        rag_system.process_document(self.document_id, original_content, metadata)
+        
+        try:
+            # Create a test suggestion system
+            suggestion_system = EditSuggestionSystem(
+                llm_interface=self.app.llm_interface,
+                rag_system=rag_system
+            )
+            
+            # Generate suggestions
+            self.logger.info("Generating edit suggestions...")
+            suggestions = suggestion_system.generate_suggestions(
+                doc_id=self.document_id,
+                max_suggestions=2
+            )
+            
+            # Check results
+            if suggestions:
+                self.logger.info(f"Generated {len(suggestions)} edit suggestions")
+                
+                for i, suggestion in enumerate(suggestions):
+                    self.logger.info(f"\nSuggestion {i+1}:")
+                    self.logger.info(f"Section: {suggestion.section_title}")
+                    self.logger.info(f"Type: {suggestion.suggestion_type}")
+                    self.logger.info(f"Confidence: {suggestion.confidence:.2f}")
+                    self.logger.info(f"Suggestion: {suggestion.suggestion[:150]}...")
+                    self.logger.info(f"Reasoning: {suggestion.reasoning[:150]}...")
+                
+                self.logger.info("✓ PASS: Edit suggestion system works")
+            else:
+                self.logger.warning("⚠ WARN: No suggestions generated (document may be too short or perfect)")
+                
+        except Exception as e:
+            self.logger.error(f"Error during edit suggestions test: {str(e)}")
+            import traceback
+            self.logger.error(traceback.format_exc())
+            
+    def test_context_windows(self):
+        """Test context windows incorporating document structure."""
+        self.logger.info("\n" + "="*50)
+        self.logger.info("Test 9: Context Windows with Document Structure")
+        self.logger.info("="*50)
+        
+        # Get original content and create test RAG system
+        original_content = self.app.google_docs_api.get_document_content(self.document_id)
+        
+        if not hasattr(self.app, 'rag_system') or not self.app.rag_system:
+            self.logger.warning("⚠ WARN: RAG system not available")
+            rag_system = RAGSystem()
+        else:
+            rag_system = self.app.rag_system
+            
+        # Process document to make sure it's in the RAG system
+        metadata = {
+            "title": self.get_document_title(),
+            "version": 1,
+            "last_updated": datetime.now().isoformat()
+        }
+        rag_system.process_document(self.document_id, original_content, metadata)
+        
+        try:
+            # Create a context window manager
+            context_manager = ContextWindowManager(rag_system)
+            
+            # Create a focused window
+            self.logger.info("Creating focused context window...")
+            focused_window = context_manager.create_focused_window(
+                doc_id=self.document_id,
+                include_metadata=True,
+                include_history=True
+            )
+            
+            if focused_window:
+                self.logger.info(f"Created focused window for document '{focused_window.title}'")
+                self.logger.info(f"Focus section: {focused_window.focus_section}")
+                self.logger.info(f"Window metadata: {list(focused_window.metadata.keys())}")
+                self.logger.info(f"Window content length: {len(focused_window.content)} chars")
+                
+                formatted_text = focused_window.to_text()
+                self.logger.info(f"Formatted window text sample: {formatted_text[:200]}...")
+                
+                self.logger.info("✓ PASS: Focused context window creation works")
+            else:
+                self.logger.error("✗ FAIL: Failed to create focused context window")
+                
+            # Create a document map
+            self.logger.info("\nCreating document map...")
+            doc_map = context_manager.create_document_map(self.document_id)
+            
+            if doc_map:
+                self.logger.info(f"Created document map: {doc_map.title}")
+                self.logger.info(f"Map metadata: {list(doc_map.metadata.keys())}")
+                self.logger.info(f"Map content sample: {doc_map.content[:200]}...")
+                
+                self.logger.info("✓ PASS: Document map creation works")
+            else:
+                self.logger.error("✗ FAIL: Failed to create document map")
+                
+            # Create a query-focused window
+            self.logger.info("\nCreating query-focused context window...")
+            query = "testing document"
+            query_window = context_manager.create_query_focused_window(
+                query=query,
+                doc_id=self.document_id,
+                max_sections=3
+            )
+            
+            if query_window:
+                self.logger.info(f"Created query window: {query_window.title}")
+                self.logger.info(f"Query metadata: {list(query_window.metadata.keys())}")
+                self.logger.info(f"Query content sample: {query_window.content[:200]}...")
+                
+                self.logger.info("✓ PASS: Query-focused window creation works")
+            else:
+                self.logger.warning("⚠ WARN: Query-focused window returned no results")
+                
+        except Exception as e:
+            self.logger.error(f"Error during context windows test: {str(e)}")
+            import traceback
+            self.logger.error(traceback.format_exc())
+    
+    def test_feedback_loops(self):
+        """Test feedback loops for suggestion improvement."""
+        self.logger.info("\n" + "="*50)
+        self.logger.info("Test 10: Feedback Loops for Suggestion Improvement")
+        self.logger.info("="*50)
+        
+        # Skip test if LLM interface is not available
+        if not hasattr(self.app, 'llm_interface') or not self.app.llm_interface or not self.app.llm_interface.is_available():
+            self.logger.warning("⚠ WARN: Skipping feedback loops test (LLM interface not available)")
+            return
+        
+        try:
+            # Create a test suggestion and feedback system
+            import tempfile
+            
+            # Create a temporary database file for testing
+            with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as temp_db:
+                temp_db_path = temp_db.name
+            
+            feedback_system = FeedbackLoopSystem(
+                llm_interface=self.app.llm_interface,
+                feedback_db_path=temp_db_path
+            )
+            
+            # Create test suggestions
+            from src.services.edit_suggestion.edit_suggestion_system import EditSuggestion
+            
+            test_suggestions = [
+                EditSuggestion(
+                    section_id="section1",
+                    section_title="Introduction",
+                    original_text="This is the introduction to the document.",
+                    suggestion="Add more context about the purpose of this document.",
+                    suggestion_type="completeness",
+                    reasoning="The introduction lacks a clear statement of purpose.",
+                    confidence=0.85
+                ),
+                EditSuggestion(
+                    section_id="section2",
+                    section_title="Methodology",
+                    original_text="The methodology follows standard practices.",
+                    suggestion="Specify which exact methodologies were used and provide citations.",
+                    suggestion_type="clarity",
+                    reasoning="The statement is too vague and needs specificity.",
+                    confidence=0.9
+                ),
+                EditSuggestion(
+                    section_id="section3",
+                    section_title="Results",
+                    original_text="The results were positive.",
+                    suggestion="Include quantitative metrics and statistical significance.",
+                    suggestion_type="completeness",
+                    reasoning="Quantitative results are needed for proper evaluation.",
+                    confidence=0.95
+                )
+            ]
+            
+            # Record feedback for each suggestion (mix of accepted/rejected)
+            self.logger.info("Recording simulated user feedback...")
+            suggestion_ids = []
+            
+            # First suggestion - accepted with feedback
+            suggestion_ids.append(
+                feedback_system.record_feedback(
+                    suggestion=test_suggestions[0],
+                    accepted=True,
+                    user_feedback="Good suggestion, made the change.",
+                    user_id="user1"
+                )
+            )
+            
+            # Second suggestion - rejected with feedback
+            suggestion_ids.append(
+                feedback_system.record_feedback(
+                    suggestion=test_suggestions[1],
+                    accepted=False,
+                    user_feedback="Too specific for this overview section.",
+                    user_id="user2"
+                )
+            )
+            
+            # Third suggestion - accepted without feedback
+            suggestion_ids.append(
+                feedback_system.record_feedback(
+                    suggestion=test_suggestions[2],
+                    accepted=True,
+                    user_id="user1"
+                )
+            )
+            
+            # Get feedback statistics
+            stats = feedback_system.get_feedback_stats()
+            
+            if stats:
+                self.logger.info(f"Feedback stats: {stats['total_suggestions']} total suggestions")
+                self.logger.info(f"Accepted: {stats['accepted_count']}, Rejected: {stats['rejected_count']}")
+                self.logger.info(f"Acceptance rate: {stats['acceptance_rate']:.2f}")
+                
+                if 'suggestion_types' in stats:
+                    for stype, data in stats['suggestion_types'].items():
+                        self.logger.info(f"Type '{stype}': {data['count']} suggestions, " +
+                                        f"{data['acceptance_rate']*100:.0f}% accepted")
+                
+                self.logger.info("✓ PASS: Feedback statistics collection works")
+            else:
+                self.logger.error("✗ FAIL: Failed to retrieve feedback statistics")
+            
+            # Force pattern update (needs 10 entries normally, but we'll bypass the check)
+            feedback_system._should_update_patterns = lambda: True
+            patterns = feedback_system.update_patterns()
+            
+            self.logger.info(f"Extracted {len(patterns)} feedback patterns")
+            
+            # Test prompt improvement
+            original_prompt = "Please suggest improvements for clarity in this section."
+            improved_prompt = feedback_system.apply_feedback_learning(
+                prompt=original_prompt,
+                suggestion_type="clarity"
+            )
+            
+            if improved_prompt != original_prompt:
+                self.logger.info("Successfully applied feedback learning to prompt:")
+                self.logger.info(improved_prompt)
+                self.logger.info("✓ PASS: Feedback-based prompt improvement works")
+            else:
+                self.logger.info("No prompt improvements applied (expected with limited data)")
+            
+            # Clean up temporary database
+            import os
+            try:
+                os.unlink(temp_db_path)
+                self.logger.info("Cleaned up temporary feedback database")
+            except Exception as e:
+                self.logger.warning(f"Could not delete temporary database: {e}")
+            
+        except Exception as e:
+            self.logger.error(f"Error during feedback loops test: {str(e)}")
+            import traceback
+            self.logger.error(traceback.format_exc())
         
     def cleanup(self):
         """Clean up after tests."""

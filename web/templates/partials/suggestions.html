@@ -1,0 +1,78 @@
+<!-- Suggestions display template -->
+<div class="space-y-6">
+    <div class="bg-indigo-50 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold mb-2 text-indigo-800">Smart Edit Suggestions</h2>
+        <p class="text-sm text-gray-600 mb-3">AI-powered suggestions to enhance your document</p>
+        
+        {% if not suggestions or suggestions|length == 0 %}
+            <div class="bg-yellow-50 text-yellow-800 p-4 rounded-md">
+                No suggestions available for this document yet. Try analyzing the document first.
+            </div>
+        {% else %}
+            <div class="space-y-4">
+                {% for suggestion in suggestions %}
+                    <div class="border rounded-lg shadow-sm bg-white overflow-hidden">
+                        <div class="bg-indigo-100 p-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium text-indigo-800">Suggestion {{ loop.index }}</span>
+                                <span class="bg-indigo-200 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                                    {{ suggestion.suggestion_type }}
+                                </span>
+                            </div>
+                            {% if suggestion.confidence %}
+                            <div class="mt-1">
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ suggestion.confidence * 100 }}%"></div>
+                                </div>
+                                <div class="text-xs text-gray-500 mt-1">Confidence: {{ (suggestion.confidence * 100)|round }}%</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="text-sm text-indigo-600 mb-2">
+                                {% if suggestion.section_title %}
+                                <span class="font-medium">Section:</span> {{ suggestion.section_title }}
+                                {% else %}
+                                <span class="font-medium">Target:</</span> Entire Document
+                                {% endif %}
+                            </div>
+                            
+                            {% if suggestion.original_text %}
+                            <div class="mb-3">
+                                <div class="text-sm text-gray-500 mb-1">Original Text:</div>
+                                <div class="bg-gray-50 p-2 rounded text-sm text-gray-700">{{ suggestion.original_text }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                <div class="text-sm text-gray-500 mb-1">Suggested Edit:</div>
+                                <div class="bg-green-50 p-2 rounded text-sm border-l-2 border-green-500">{{ suggestion.suggestion }}</div>
+                            </div>
+                            
+                            {% if suggestion.reasoning %}
+                            <div class="mt-3">
+                                <div class="text-sm text-gray-500 mb-1">Reasoning:</div>
+                                <div class="text-sm text-gray-700 bg-gray-50 p-2 rounded">{{ suggestion.reasoning }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="flex mt-4 space-x-2">
+                                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm transition"
+                                        hx-post="/apply-suggestion/{{ doc_id }}"
+                                        hx-vals='{"suggestion_id": "{{ suggestion.id }}"}'>
+                                    Apply This Edit
+                                </button>
+                                <button class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 px-3 py-1 rounded text-sm transition"
+                                        hx-post="/feedback/{{ doc_id }}"
+                                        hx-vals='{"suggestion_id": "{{ suggestion.id }}", "feedback": "reject"}'>
+                                    Dismiss
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>

@@ -102,7 +102,14 @@ def get_monitored_documents() -> List[Dict[str, Any]]:
     docs_file = DATA_DIR / 'monitored_documents.json'
     if docs_file.exists():
         with open(docs_file, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            # Handle both formats: either a dictionary with "documents" key or a direct list
+            if isinstance(data, dict) and "documents" in data:
+                return data["documents"]
+            elif isinstance(data, list):
+                return data
+            else:
+                return []
     return []
 
 def save_monitored_document(document_id: str, name: str, webhook_enabled: bool = True) -> None:

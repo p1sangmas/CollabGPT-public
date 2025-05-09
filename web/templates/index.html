@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CollabGPT Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/websocket-client.js') }}"></script>
+    <style>
+        .flash-message {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .flash-success {
+            background-color: #d1fae5;
+            border-color: #34d399;
+            color: #065f46;
+        }
+        .flash-error {
+            background-color: #fee2e2;
+            border-color: #f87171;
+            color: #991b1b;
+        }
+        .notification {
+            transition: opacity 0.5s ease-in-out;
+        }
+        @keyframes pulse-blue {
+            0%, 100% { background-color: #dbeafe; }
+            50% { background-color: #bfdbfe; }
+        }
+        .activity-update {
+            animation: pulse-blue 2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Notifications container will be created by JS -->
+    
+    <div class="container mx-auto p-4">
+        <header class="bg-white p-4 shadow rounded-lg mb-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">CollabGPT Dashboard</h1>
+                <span class="text-sm text-gray-500">AI Assistant for Collaborative Document Editing</span>
+            </div>
+        </header>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Monitored Documents Panel -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Monitored Documents</h2>
+                <ul id="document-list" class="divide-y">
+                    {% if documents %}
+                        {% for doc_id, doc_info in documents.items() %}
+                            <li class="py-3">
+                                <a href="{{ url_for('document_view', doc_id=doc_id) }}" class="flex items-center hover:bg-gray-50 p-2 rounded">
+                                    <span class="flex-grow font-medium">{{ doc_info.get('name', doc_id) }}</span>
+                                    <span class="text-sm text-gray-500">Last updated: {{ doc_info.get('last_updated', 'Never') }}</span>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="py-3 text-gray-500">No documents are currently being monitored.</li>
+                    {% endif %}
+                </ul>
+                <div class="mt-4">
+                    <button hx-get="{{ url_for('add_document_form') }}" 
+                            hx-target="#modal-container" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition">
+                        Add Document
+                    </button>
+                </div>
+            </div>
+            
+            <!-- System Status Panel -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4 flex justify-between">
+                    <span>System Status</span>
+                    <button hx-get="{{ url_for('system_status') }}" 
+                            hx-target="#status-panel"
+                            class="text-sm bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">
+                        Refresh
+                    </button>
+                </h2>
+                <div id="status-panel" hx-get="{{ url_for('system_status') }}" hx-trigger="load, every 30s">
+                    <!-- Will be populated by HTMX -->
+                    <div class="flex justify-center items-center py-6">
+                        <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="ml-2">Loading status...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity Panel -->
+        <div class="bg-white p-4 rounded-lg shadow mt-6">
+            <h2 class="text-xl font-semibold mb-4 flex justify-between">
+                <span>Recent Activity</span>
+                <button hx-get="{{ url_for('recent_activity') }}" 
+                        hx-target="#activity-feed"
+                        class="text-sm bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">
+                        Refresh
+                </button>
+            </h2>
+            <div id="activity-feed" hx-get="{{ url_for('recent_activity') }}" hx-trigger="load, every 60s">
+                <!-- Will be populated by HTMX -->
+                <div class="flex justify-center items-center py-6">
+                    <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-2">Loading activity...</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Container -->
+        <div id="modal-container" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+            <!-- Modal content will be loaded here by HTMX -->
+        </div>
+    </div>
+
+    <script>
+        // Simple modal show/hide
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target.id === 'modal-container' && evt.detail.xhr.status === 200) {
+                document.getElementById('modal-container').classList.remove('hidden');
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('modal-container').addEventListener('click', function(evt) {
+            if (evt.target === this) {
+                this.classList.add('hidden');
+                this.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>

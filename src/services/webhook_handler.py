@@ -98,8 +98,11 @@ class WebhookHandler:
             # Debug information
             self.logger.info(f"Received webhook with headers: {headers}")
             
-            # Check if this is a Google Drive push notification
-            if 'X-Goog-Channel-ID' in headers or 'X-Goog-Resource-ID' in headers:
+            # Check if this is a Google Drive push notification (case-insensitive header check)
+            google_headers = ['X-Goog-Channel', 'X-Goog-Resource']
+            is_google_push = any(any(key.lower().startswith(h.lower()) for h in google_headers) for key in headers.keys())
+            
+            if is_google_push:
                 self.logger.info("Identified as Google Drive push notification")
                 return self.process_google_push_notification(headers)
                 
@@ -162,76 +165,70 @@ class WebhookHandler:
         with measure_latency("google_push_notification", self.performance_monitor):
             try:
                 # Extract key headers
-                channel_id = headers.get('X-Goog-Channel-ID', '')
-                resource_id = headers.get('X-Goog-Resource-ID', '')
+                channel_id = headers.get('X-Goog-Channel-ID', headers.get('X-Goog-Channel-Id', ''))
+                resource_id = headers.get('X-Goog-Resource-ID', headers.get('X-Goog-Resource-Id', ''))
                 resource_state = headers.get('X-Goog-Resource-State', '')
-                resource_uri = headers.get('X-Goog-Resource-URI', '')
+                resource_uri = headers.get('X-Goog-Resource-URI', headers.get('X-Goog-Resource-Uri', ''))
                 changed = headers.get('X-Goog-Changed', '')
+                token = headers.get('X-Goog-Channel-Token', '')  # Document ID sent in token
                 
                 # Log the complete headers for debugging
                 self.logger.info(f"Complete Google notification headers: {headers}")
                 
                 # Log the individual extracted headers
-                self.logger.info(f"Google notification details - State: {resource_state}, Channel: {channel_id}, Resource: {resource_id}, URI: {resource_uri}")
+                self.logger.info(f"Google notification details - State: {resource_state}, Channel: {channel_id}, Resource: {resource_id}, URI: {resource_uri}, Token: {token}")
                 if changed:
                     self.logger.info(f"Changed components: {changed}")
                 
-                # Check if this is a valid notification type and resource URI is available
-                if resource_uri:
+                # Handle sync notification (webhook setup verification)
+                if resource_state == 'sync':
+                    self.logger.info("Received webhook sync notification (verification)")
+                    return True
+                
+                # Extract document ID from token if available, otherwise from URI
+                doc_id = None
+                
+                # First try to get document ID from token
+                if token:
+                    doc_id = token
+                    self.logger.info(f"Extracted document ID from token: {doc_id}")
+                # Then try from resource URI
+                elif resource_uri:
                     # Extract document ID from the resource URI
                     # URI format: https://www.googleapis.com/drive/v3/files/document_id
                     doc_id = resource_uri.split('/')[-1].split('?')[0]  # Handle any query parameters
-                    
-                    self.logger.info(f"Document notification for doc_id={doc_id}")
-                    
-                    # For 'change' or 'update' state, process document changes
-                    if resource_state in ['change', 'update']:
-                        self.logger.info(f"Processing document change from Google notification for doc: {doc_id}")
-                        # Process asynchronously to minimize latency
-                        self.thread_pool.submit(
-                            self._process_document_change, 
-                            doc_id, 
-                            {'eventType': 'change', 'source': 'google_push', 'changed': changed}
-                        )
-                        return True
-                    # For 'sync' state, this is just acknowledging the notification setup
-                    elif resource_state == 'sync':
-                        self.logger.info(f"Webhook synchronization notification received for channel {channel_id}")
-                        return True
-                    else:
-                        self.logger.warning(f"Unhandled resource state: {resource_state}")
-                        return False
+                    self.logger.info(f"Extracted document ID from URI: {doc_id}")
+                
+                # If we couldn't extract the document ID, check if the channel ID contains it
+                if not doc_id and channel_id and 'collabgpt-channel-' in channel_id:
+                    # Extract doc ID from channel ID format: collabgpt-channel-{doc_id}-{timestamp}
+                    parts = channel_id.split('-')
+                    if len(parts) > 2:
+                        # The document ID should be after "collabgpt-channel-"
+                        potential_id = parts[2]
+                        if potential_id:
+                            doc_id = potential_id
+                            self.logger.info(f"Extracted document ID from channel ID: {doc_id}")
+                
+                if not doc_id:
+                    self.logger.error("No document ID found in notification")
+                    return False
+                
+                self.logger.info(f"Document notification for doc_id={doc_id}")
+                
+                # For 'change' or 'update' state, process document changes
+                if resource_state in ['change', 'update']:
+                    self.logger.info(f"Processing document change from Google notification for doc: {doc_id}")
+                    # Process asynchronously to minimize latency
+                    self.thread_pool.submit(
+                        self._process_document_change, 
+                        doc_id, 
+                        {'eventType': 'change', 'source': 'google_push', 'changed': changed}
+                    )
+                    return True
                 else:
-                    # Case-insensitive header search for Resource URI
-                    resource_uri_alt = None
-                    for key, value in headers.items():
-                        if key.lower() == 'x-goog-resource-uri':
-                            resource_uri_alt = value
-                            break
-                    
-                    if resource_uri_alt:
-                        # Process with the alternate found URI
-                        doc_id = resource_uri_alt.split('/')[-1].split('?')[0]
-                        self.logger.info(f"Found alternate resource URI: {resource_uri_alt}, doc_id={doc_id}")
-                        
-                        if resource_state in ['change', 'update']:
-                            self.logger.info(f"Processing document change from Google notification for doc: {doc_id}")
-                            # Process asynchronously to minimize latency
-                            self.thread_pool.submit(
-                                self._process_document_change, 
-                                doc_id, 
-                                {'eventType': 'change', 'source': 'google_push', 'changed': changed}
-                            )
-                            return True
-                        elif resource_state == 'sync':
-                            self.logger.info(f"Webhook synchronization notification received for channel {channel_id}")
-                            return True
-                        else:
-                            self.logger.warning(f"Unhandled resource state: {resource_state}")
-                            return False
-                    else:
-                        self.logger.warning("No resource URI in notification")
-                        return False
+                    self.logger.warning(f"Unhandled resource state: {resource_state}")
+                    return True  # Still return true to acknowledge receipt
                     
             except Exception as e:
                 self.logger.error(f"Error processing Google notification: {e}", exc_info=True)
@@ -363,7 +360,16 @@ class WebhookHandler:
             document_id: The ID of the document to simulate a change for
         """
         self.logger.info(f"Simulating change event for document {document_id}")
-        self._process_document_change(document_id, {'eventType': 'change', 'simulated': True})
+        # Use a special metadata attribute to identify this as a simulated change
+        self._process_document_change(
+            document_id, 
+            {
+                'eventType': 'change', 
+                'simulated': True,
+                'user_id': 'simulator', 
+                'timestamp': datetime.now().isoformat()
+            }
+        )
         self.logger.info(f"Simulation completed for document {document_id}")
 
     def _get_document_content_continuous(self, document_id: str) -> str:

@@ -207,17 +207,31 @@ class GoogleDocsAPI:
             else:
                 token_path = 'token.json'
                 if os.path.exists(token_path):
-                    self.credentials = Credentials.from_authorized_user_info(
-                        json.loads(open(token_path).read()))
+                    try:
+                        self.credentials = Credentials.from_authorized_user_info(
+                            json.loads(open(token_path).read()))
+                    except Exception as e:
+                        print(f"Error loading existing token (will re-authenticate): {e}")
+                        self.credentials = None
                 
                 # If credentials don't exist or are invalid, run the OAuth flow
                 if not self.credentials or not self.credentials.valid:
                     if self.credentials and self.credentials.expired and self.credentials.refresh_token:
-                        self.credentials.refresh(Request())
-                    else:
+                        try:
+                            self.credentials.refresh(Request())
+                        except Exception as e:
+                            print(f"Error refreshing token (will re-authenticate): {e}")
+                            self.credentials = None
+                            # Remove the invalid token file
+                            if os.path.exists(token_path):
+                                os.remove(token_path)
+                                print("Removed invalid token file")
+                    
+                    if not self.credentials:
                         if not self.credentials_path:
                             raise ValueError("No credentials path provided for OAuth flow")
                         
+                        print("Starting new OAuth flow")
                         flow = InstalledAppFlow.from_client_secrets_file(
                             self.credentials_path, self.SCOPES)
                         self.credentials = flow.run_local_server(port=0)
@@ -225,6 +239,7 @@ class GoogleDocsAPI:
                     # Save credentials for future use
                     with open(token_path, 'w') as token:
                         token.write(self.credentials.to_json())
+                        print("New token saved successfully")
             
             # Build the services using the authenticated credentials
             # Configure the httplib2.Http object with extended timeout
@@ -455,18 +470,25 @@ class GoogleDocsAPI:
             if not self.drive_service:
                 raise ValueError("Not authenticated. Call authenticate() first.")
             
+            # Generate a unique channel ID that includes the document ID for better tracking
+            channel_id = f'collabgpt-channel-{document_id}-{int(datetime.now().timestamp())}'
+            
             # Create a notification channel
             channel_body = {
-                'id': f'collabgpt-channel-{document_id}-{int(datetime.now().timestamp())}',
+                'id': channel_id,
                 'type': 'web_hook',
                 'address': webhook_url,
+                # Important: Add a token for Google to include in notifications
+                'token': document_id  # Using document_id as the token for verification
             }
             
+            print(f"Setting up watch for document {document_id} with URL {webhook_url}")
             response = self.drive_service.files().watch(
                 fileId=document_id,
                 body=channel_body
             ).execute()
             
+            print(f"Watch response: {response}")
             return response
             
         except HttpError as error:

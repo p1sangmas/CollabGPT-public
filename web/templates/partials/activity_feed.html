@@ -1,0 +1,28 @@
+<!-- Recent activity feed template -->
+{% if not events or events|length == 0 %}
+    <div class="bg-yellow-50 text-yellow-800 p-4 rounded-md">
+        No recent activity recorded across any documents.
+    </div>
+{% else %}
+    <div class="divide-y">
+        {% for event in events %}
+            <div class="py-3">
+                <div class="flex justify-between">
+                    <span class="font-medium">{{ event.type }}</span>
+                    <span class="text-xs text-gray-500">{{ event.timestamp }}</span>
+                </div>
+                <div class="text-sm mt-1">
+                    <a href="{{ url_for('document_view', doc_id=event.document_id) }}" class="text-blue-600 hover:underline">
+                        {{ event.document_name }}
+                    </a>
+                </div>
+                <div class="text-sm text-gray-700 mt-1">
+                    {% if event.user %}
+                        <span class="text-blue-600">{{ event.user }}</span>:
+                    {% endif %}
+                    {{ event.description }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

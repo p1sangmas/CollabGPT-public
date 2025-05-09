@@ -1,0 +1,24 @@
+<!-- System status partial template for HTMX loading -->
+<div class="grid grid-cols-2 gap-4">
+    <div class="bg-gray-50 p-3 rounded">
+        <div class="text-sm text-gray-500">System Status</div>
+        <div class="font-medium {{ 'text-green-600' if status.running else 'text-red-600' }}">
+            {{ 'Running' if status.running else 'Stopped' }}
+        </div>
+    </div>
+    
+    <div class="bg-gray-50 p-3 rounded">
+        <div class="text-sm text-gray-500">Monitored Documents</div>
+        <div class="font-medium">{{ status.monitored_documents }}</div>
+    </div>
+    
+    <div class="bg-gray-50 p-3 rounded">
+        <div class="text-sm text-gray-500">Memory Usage</div>
+        <div class="font-medium">{{ status.memory_usage }}</div>
+    </div>
+    
+    <div class="bg-gray-50 p-3 rounded">
+        <div class="text-sm text-gray-500">Last Updated</div>
+        <div class="font-medium">{{ status.system_time }}</div>
+    </div>
+</div>

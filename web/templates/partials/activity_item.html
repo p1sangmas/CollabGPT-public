@@ -1,0 +1,12 @@
+<div class="border-b pb-2 last:border-b-0 activity-item {{ 'recent-update' if is_new|default(false) else '' }}" data-timestamp="{{ event.timestamp }}" data-event-id="{{ event.id|default('event_' + range(1000)|random|string) }}">
+    <div class="flex justify-between">
+        <span class="font-medium">{{ event.type }}</span>
+        <span class="text-xs text-gray-500">{{ event.timestamp }}</span>
+    </div>
+    <div class="text-sm text-gray-700">
+        {% if event.user %}
+            <span class="text-blue-600">{{ event.user }}</span>:
+        {% endif %}
+        {{ event.description }}
+    </div>
+</div>

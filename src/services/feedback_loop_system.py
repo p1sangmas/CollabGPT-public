@@ -199,6 +199,89 @@ class FeedbackLoopSystem:
             
         return suggestion_id
     
+    def record_raw_feedback(self, feedback_data: Dict[str, Any]) -> bool:
+        """
+        Record raw feedback data without requiring a full EditSuggestion object.
+        This is useful when the original suggestion is not available.
+        
+        Args:
+            feedback_data: Dictionary containing feedback information
+                Must include 'suggestion_id' and 'accepted' keys
+                
+        Returns:
+            True if feedback was recorded successfully
+        """
+        try:
+            suggestion_id = feedback_data.get('suggestion_id')
+            accepted = feedback_data.get('accepted', False)
+            
+            if not suggestion_id:
+                self.logger.error("Missing suggestion_id in raw feedback data")
+                return False
+                
+            # Insert minimal feedback record directly into database
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Check if we already have this suggestion in the database
+            cursor.execute(
+                "SELECT COUNT(*) FROM feedback WHERE suggestion_id = ?",
+                (suggestion_id,)
+            )
+            
+            exists = cursor.fetchone()[0] > 0
+            
+            if exists:
+                # Update existing record
+                cursor.execute(
+                    """
+                    UPDATE feedback SET 
+                        accepted = ?,
+                        user_feedback = ?,
+                        user_id = ?,
+                        timestamp = ?
+                    WHERE suggestion_id = ?
+                    """,
+                    (
+                        1 if accepted else 0,
+                        feedback_data.get('user_feedback', ''),
+                        feedback_data.get('user_id', 'unknown'),
+                        feedback_data.get('timestamp', datetime.now().isoformat()),
+                        suggestion_id
+                    )
+                )
+            else:
+                # Insert new minimal record
+                cursor.execute(
+                    """
+                    INSERT INTO feedback 
+                    (suggestion_id, section_id, accepted, user_feedback, user_id, timestamp) 
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        suggestion_id,
+                        suggestion_id.split('_')[1] if '_' in suggestion_id else suggestion_id,
+                        1 if accepted else 0,
+                        feedback_data.get('user_feedback', ''),
+                        feedback_data.get('user_id', 'unknown'),
+                        feedback_data.get('timestamp', datetime.now().isoformat())
+                    )
+                )
+                
+            conn.commit()
+            conn.close()
+            
+            self.logger.info(
+                f"Recorded raw feedback for suggestion {suggestion_id}: " +
+                f"{'accepted' if accepted else 'rejected'}"
+            )
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error recording raw feedback: {e}", exc_info=True)
+            return False
+    
     def get_feedback_stats(self) -> Dict[str, Any]:
         """
         Get statistics about collected feedback.

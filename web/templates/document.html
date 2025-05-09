@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document View - CollabGPT</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/websocket-client.js') }}"></script>
+    <style>
+        .flash-message {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.25rem;
+        }
+        .flash-success {
+            background-color: #d1fae5;
+            border-color: #34d399;
+            color: #065f46;
+        }
+        .flash-error {
+            background-color: #fee2e2;
+            border-color: #f87171;
+            color: #991b1b;
+        }
+        .notification {
+            transition: opacity 0.5s ease-in-out;
+        }
+        @keyframes highlight-update {
+            0% { background-color: #dbeafe; }
+            100% { background-color: transparent; }
+        }
+        .recent-update {
+            animation: highlight-update 3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen" data-document-id="{{ doc_id }}">
+    <!-- No notifications container here - we'll show updates in the Real-time Updates section -->
+    
+    <div class="container mx-auto p-4">
+        <header class="bg-white p-4 shadow rounded-lg mb-6 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Document View</h1>
+            <a href="{{ url_for('index') }}" class="text-blue-500 hover:text-blue-700">Back to Dashboard</a>
+        </header>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Document Title -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <h2 class="text-xl font-semibold">{{ doc_info.get('title', 'Document') }}</h2>
+            <p class="text-sm text-gray-500 mt-1">ID: {{ doc_id }}</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Tools Panel -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Tools</h2>
+                <ul class="space-y-3">
+                    <li>
+                        <button hx-get="{{ url_for('analyze_document', doc_id=doc_id) }}" 
+                                hx-target="#results-panel" 
+                                hx-indicator="#tool-loading"
+                                class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded transition">
+                            📊 Analyze Document
+                        </button>
+                    </li>
+                    <li>
+                        <button hx-get="{{ url_for('document_suggestions', doc_id=doc_id) }}" 
+                                hx-target="#results-panel" 
+                                hx-indicator="#tool-loading"
+                                class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded transition">
+                            💡 Smart Suggestions
+                        </button>
+                    </li>
+                    <li>
+                        <button hx-get="{{ url_for('document_map', doc_id=doc_id) }}" 
+                                hx-target="#results-panel" 
+                                hx-indicator="#tool-loading"
+                                class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded transition">
+                            🗺️ Document Map
+                        </button>
+                    </li>
+                    <li>
+                        <button hx-get="{{ url_for('toggle_monitoring', doc_id=doc_id) }}" 
+                                hx-target="#monitoring-status" 
+                                hx-indicator="#tool-loading"
+                                class="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded transition">
+                            👁️ Toggle Monitoring
+                        </button>
+                    </li>
+                </ul>
+                
+                <div id="monitoring-status" class="mt-4 p-3 bg-gray-100 rounded text-center">
+                    <!-- Monitoring status will be displayed here -->
+                    <span class="inline-block px-2 py-1 rounded-full text-xs {{ 'bg-green-100 text-green-800' if monitoring_status == 'active' else 'bg-yellow-100 text-yellow-800' }}">
+                        Monitoring: {{ monitoring_status|title }}
+                    </span>
+                </div>
+                
+                <!-- Loading indicator -->
+                <div id="tool-loading" class="htmx-indicator flex justify-center items-center mt-4">
+                    <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-2">Processing...</span>
+                </div>
+            </div>
+            
+            <!-- Document Viewer -->
+            <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-4">Google Document</h2>
+                <div class="border rounded">
+                    <iframe src="https://docs.google.com/document/d/{{ doc_id }}/preview" 
+                            class="w-full h-[600px]"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Panel -->
+        <div id="results-panel" class="mt-6 bg-white p-4 rounded-lg shadow">
+            <p class="text-gray-500 text-center py-10">Select an action from the tools panel to see results here.</p>
+        </div>
+        
+        <!-- Real-time Updates Section (replacing Document Activity) -->
+        <div class="mt-6 bg-white p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4 flex justify-between">
+                <span>Real-time Updates</span>
+                <div class="flex items-center">
+                    <span id="real-time-indicator" class="inline-flex items-center mr-3 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                        <span class="h-2 w-2 bg-green-500 rounded-full mr-1 animate-pulse"></span>
+                        Real-time updates
+                    </span>
+                    <button id="clear-updates-btn" class="text-sm bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition">
+                        Clear All
+                    </button>
+                </div>
+            </h2>
+            <div id="realtime-updates-container" class="max-h-60 overflow-y-auto text-sm divide-y divide-gray-100">
+                <div class="bg-blue-50 text-blue-800 p-4 rounded-md">
+                    Waiting for document updates. Any changes to the document will appear here in real-time.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add event listener for the clear updates button
+        document.addEventListener('DOMContentLoaded', function() {
+            const clearButton = document.getElementById('clear-updates-btn');
+            if (clearButton) {
+                clearButton.addEventListener('click', function() {
+                    const container = document.getElementById('realtime-updates-container');
+                    if (container) {
+                        container.innerHTML = '<div class="bg-blue-50 text-blue-800 p-4 rounded-md">Waiting for document updates. Any changes to the document will appear here in real-time.</div>';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
